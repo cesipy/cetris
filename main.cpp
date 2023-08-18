@@ -149,7 +149,8 @@ void game_init(Game* game, int rows, int cols)
     {
         for (int j=0; j < game->cols;j++)
         {
-            if(i == j) { game->game_board[i][j] = CELL;}
+            if(j == 1) { game->game_board[i][j] = CELL;}
+            else if(i == 10) {game->game_board[i][j] = CELL; }
             // fill game board with empty cells at start -> '0' is emtpy
             else {
                 game->game_board[i][j] = EMPTY_CELL;
