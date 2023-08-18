@@ -9,14 +9,21 @@
 #define BOARD_WIDTH 50
 #define BOARD_HEIGHT 50
 #define EMPTY_CELL 0
+#define CELL 1
 #define TETROMINO_SIZE 4
+
+#define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
+                       waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
+#define ADD_EMPTY(w) waddch((w), ' '); waddch((w), ' ')
 
 void main_loop();
 int hit_bottom();
 void init_colors();
 void draw_tetromino_window(WINDOW *, const int tetromino[TETROMINO_SIZE][TETROMINO_SIZE], int, int);
 
-
+enum type {
+     I, J, L
+};
 typedef struct {
     // for board:
     int rows;
@@ -26,6 +33,14 @@ typedef struct {
     //further add
 
 }Game;
+
+typedef struct {
+    int rows;
+    int cols;
+
+    WINDOW* win;
+    int type;
+}Piece;
 
 const int TETROMINO_I[TETROMINO_SIZE][TETROMINO_SIZE] = {
         {0,0,0,0},
@@ -48,5 +63,7 @@ const int TETROMINO_L[TETROMINO_SIZE][TETROMINO_SIZE] = {
         {0,0,0,0},
         {0,0,0,0}
 };
+
+const int* types[3] = {&TETROMINO_I[0][0], &TETROMINO_J[0][0], &TETROMINO_L[0][0]};
 
 #endif
