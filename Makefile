@@ -8,7 +8,7 @@ CFLAGS = -c
 LDFLAGS = -lcurses
 
 # Source files
-SRCS = main.cpp backend.cpp
+SRCS = main.cpp backend.cpp block.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)

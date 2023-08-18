@@ -1,21 +1,21 @@
 #include <curses.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "main.h"
 #include "backend.h"
+#include "block.h"
 
-#define BOARD_WIDTH 50
-#define BOARD_HEIGHT 50
 
 int ch;
 int gameBoard[BOARD_HEIGHT][BOARD_WIDTH]; // 2D array to represent the game board
 
 WINDOW* board, * next, *hold, *score;
-Game* game = (Game*)malloc(sizeof(Game));
+Game* game;
 
 int main (int argc, char* argv[])
 {
+    game = new Game;    // alloc memory
     game_init(game, BOARD_HEIGHT, BOARD_WIDTH);
     initscr();
     init_colors();
@@ -28,6 +28,8 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
 
     main_loop();
+
+    delete game;
     endwin();
 }
 

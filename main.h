@@ -14,6 +14,7 @@ typedef struct {
     int rows;
     int cols;
 
+    int game_board[BOARD_WIDTH][BOARD_HEIGHT];
     //further add
 
 }Game;
