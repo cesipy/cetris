@@ -6,17 +6,23 @@
 #include <unistd.h>
 
 void game_init(Game*, int rows, int cols);
-void display_board(WINDOW* win, Game* game);
+void display_board(WINDOW* win, Game* g);
+void init_falling_piece(Falling* f, int rows, int cols, type type);
+void draw_tetromino_window(Falling* f);
+void gravity(Falling* f);
 
 int ch;
 
 WINDOW* board, * falling, *hold, *score;
 Game* game;
+Falling * falling_piece;
 
 int main (int argc, char* argv[])
 {
     game = new Game;    // alloc memory
+    falling_piece = new Falling ;
     game_init(game, BOARD_HEIGHT, BOARD_WIDTH);
+    init_falling_piece(falling_piece, BOARD_HEIGHT, BOARD_WIDTH ,I);
     initscr();
     init_colors();
     noecho();
@@ -26,14 +32,14 @@ int main (int argc, char* argv[])
     keypad(stdscr, TRUE);       // allow for arrow keys
 
     board = newwin(game->rows, game->cols, 0, 0);
-    falling = newwin(44, 44, BOARD_HEIGHT / 2, BOARD_WIDTH / 2);
-    box(board, 0, 0);
-    wrefresh(board);
+
+    falling_piece->win = newwin(50, 50, 0, 0);
 
     main_loop();
 
 
     delete game;
+    delete falling_piece;
     endwin();
 }
 
@@ -41,12 +47,7 @@ int main (int argc, char* argv[])
 
 void main_loop()
 {
-    int tetrominoX = 10;
-    int tetrominoY = 0; // Start at the top
-
-    int tempx = BOARD_HEIGHT / 2;
-    int tempy = BOARD_WIDTH / 2;
-
+    int tick = 0;
 
     while (!hit_bottom())
     {
@@ -59,46 +60,47 @@ void main_loop()
         {
             case KEY_LEFT:
                 // Move Tetromino left
-                tetrominoX--;
 
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
-                tetrominoX++;
+                //tetrominoX++;
                 break;
             case KEY_UP:
                 // Rotate Tetromino (implement the rotation logic)
                 // Example: currentTetromino = rotate_tetromino(currentTetromino);
                 break;
             case KEY_DOWN:
-                tetrominoY++;
+                //tetrominoY++;
                 // Move Tetromino down faster (if desired)
                 break;
             default:
                 break;
         }
 
-
-
         // Clear Tetromino window
-        werase(falling);
+        //werase(falling_piece->win);
 
-        // Update Tetromino position and draw it
-        draw_tetromino_window(falling, TETROMINO_I, tetrominoY, tetrominoX);
         //mvprintw(tetrominoY, tetrominoX * 2, "[]");
-        tempy++;
-        tempx++;
-        mvwin(falling, tempy, tempx);
 
         display_board(board, game);
 
+        // Update Tetromino position and draw it
+        draw_tetromino_window(falling_piece);
+
+        if (tick % GRAVITY_TICKS == 0) {
+            gravity(falling_piece);
+        }
+
         // Refresh Tetromino window
-        wrefresh(falling);
-        wrefresh(board);
+        //wrefresh(board);
+        //wrefresh(falling_piece->win);
+        doupdate();
 
         // Sleep for a short duration
         usleep(100000);
 
+        tick++;
         // Handle additional game logic (collision detection, row clearing, etc.)
     }
 }
@@ -118,57 +120,81 @@ void init_colors()
 }
 
 // Draw a Tetromino on the specified window at the given row and column
-void draw_tetromino_window(WINDOW* win, const int tetromino[TETROMINO_SIZE][TETROMINO_SIZE], int row, int col)
+void draw_tetromino_window(Falling* f)
 {
-    for (int i = 0; i < TETROMINO_SIZE; i++) {
-        for (int j = 0; j < TETROMINO_SIZE; j++) {
+    for (int i = 0; i < f->rows; i++) {
+        for (int j = 0; j < f->cols; j++) {
             // Calculate the coordinates on the window
-            int y = row + i;
-            int x = col + j;
 
             // Check if the current cell in the Tetromino is a block (1)
-            if (tetromino[i][j] == 1) {
+            if (f->game_board[i][j]) {
                 // Set the color pair for the Tetromino block (adjust color pair number)
-                wattron(win, COLOR_PAIR(1));
+                wattron(f->win, COLOR_PAIR(1));
                 // Print a block character at the calculated coordinates
-                waddch(win, ' '); // Add your desired character representation
-                wattroff(win, COLOR_PAIR(1));
+                waddch(f->win, ' '); // Add your desired character representation
+                wattroff(f->win, COLOR_PAIR(1));
             }
         }
     }
+    wnoutrefresh(f->win);
 }
 
-void game_init(Game* game, int rows, int cols)
+void game_init(Game* g, int rows, int cols)
 {
-    game->rows = rows;
-    game->cols = cols;
+    g->rows = rows;
+    g->cols = cols;
 
     // further implementation
 
-    for (int i=0; i<game->rows;i++)
+    for (int i=0; i<g->rows;i++)
     {
-        for (int j=0; j < game->cols;j++)
+        for (int j=0; j < g->cols;j++)
         {
-            if(j == 1) { game->game_board[i][j] = CELL;}
-            else if(i == 10) {game->game_board[i][j] = CELL; }
+            if(j == 1) { g->game_board[i][j] = CELL;}
+            else if(i == 10) {g->game_board[i][j] = CELL; }
             // fill game board with empty cells at start -> '0' is emtpy
             else {
-                game->game_board[i][j] = EMPTY_CELL;
+                g->game_board[i][j] = EMPTY_CELL;
             }
         }
     }
 }
 
-void display_board(WINDOW* win, Game* game)
+void init_falling_piece(Falling* f, int rows, int cols, type type)
+{
+    f->rows = rows;
+    f->cols = cols;
+
+    for (int i=0; i<f->rows; i++)
+    {
+        for (int j=0; j<f->cols;j++)
+        {
+            f->game_board[i][j] = 0;
+        }
+    }
+
+    if (type == I)
+    {
+        int x = 10;
+        int y = BOARD_WIDTH / 2;
+
+        f->game_board[x][y-1]= 1;
+        f->game_board[x][y]= 1;
+        f->game_board[x][y+1]= 1;
+        f->game_board[x][y+2]= 1;
+    }
+}
+
+void display_board(WINDOW* win, Game* g)
 {
     box(win, 0, 0);
 
-    for(int i=0; i< game->rows;i++)
+    for(int i=0; i < g->rows; i++)
     {
         wmove(win, i +1, 1);
-        for (int j = 0; j < game->cols;j++)
+        for (int j = 0; j < g->cols; j++)
         {
-            if (game->game_board[i][j] != EMPTY_CELL)
+            if (g->game_board[i][j] != EMPTY_CELL)
             {
                 ADD_BLOCK(win, 1);
             }
@@ -181,4 +207,18 @@ void display_board(WINDOW* win, Game* game)
         }
     }
     wnoutrefresh(win);
+}
+
+void gravity(Falling* f)
+{
+    for (int i=0; i<f->rows;i++)
+    {
+        for (int j=0; j<f->cols;j++)
+        {
+            if(f->game_board[i][j] == 1 && i < BOARD_HEIGHT - 1) {
+                f->game_board[i][j] = 0;
+                f->game_board[i+1][j] = 1;
+            }
+        }
+    }
 }

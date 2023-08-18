@@ -4,6 +4,7 @@
 #include <curses.h>
 #include "block.h"
 #include "backend.h"
+#define GRAVITY_TICKS 10
 
 
 #define BOARD_WIDTH 50
@@ -19,7 +20,7 @@
 void main_loop();
 int hit_bottom();
 void init_colors();
-void draw_tetromino_window(WINDOW *, const int tetromino[TETROMINO_SIZE][TETROMINO_SIZE], int, int);
+
 
 enum type {
      I, J, L
@@ -33,6 +34,14 @@ typedef struct {
     //further add
 
 }Game;
+
+typedef struct {
+    int rows;
+    int cols;
+
+    int game_board[BOARD_WIDTH][BOARD_HEIGHT];
+    WINDOW* win;
+}Falling;
 
 typedef struct {
     int rows;
