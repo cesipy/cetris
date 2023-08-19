@@ -6,22 +6,21 @@
 
 void game_init(Game*, int rows, int cols);
 void display_board(WINDOW* win, Game* g);
-void init_falling_piece(Falling* f, int rows, int cols, type type);
-void draw_tetromino_window(Falling* f);
+
 void gravity(Falling* f);
 
 int ch;
 
 WINDOW* board, * falling, *hold, *score;
 Game* game;
-Falling * falling_piece;
+
 
 int main (int argc, char* argv[])
 {
     game = new Game;    // alloc memory
     falling_piece = new Falling ;
     game_init(game, BOARD_HEIGHT, BOARD_WIDTH);
-    init_falling_piece(falling_piece, BOARD_HEIGHT, BOARD_WIDTH ,I);
+
     initscr();
     init_colors();
     noecho();
@@ -111,31 +110,7 @@ void init_colors()
     // Define other color pairs
 }
 
-// Draw a Tetromino on the specified window at the given row and column
-void draw_tetromino_window(Falling* f)
-{
-    for (int i = 0; i < f->rows; i++) {
-        for (int j = 0; j < f->cols; j++) {
 
-            int x = i;
-            int y = j;
-
-            // wmove(f->win, x, y);
-            wmove(f->win, i +1, 1);
-            // check if it is a block
-            if (f->game_board[i][j]) {
-                // set attributes (color)
-                /*wattron(f->win, COLOR_PAIR(1));
-                // print a block
-                waddch(f->win, ' '); // Add your desired character representation
-                wattroff(f->win, COLOR_PAIR(1));
-                 */
-                ADD_BLOCK(f->win, 2);
-            }
-        }
-    }
-    wnoutrefresh(f->win);
-}
 
 void display_board(WINDOW* win, Game* g)
 {

@@ -3,8 +3,6 @@
 
 #include <ncurses.h>
 #define GRAVITY_TICKS 1000
-
-
 #define BOARD_WIDTH  30
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
@@ -23,23 +21,21 @@ void init_colors();
 enum type {
      I, J, L
 };
+
+typedef struct {
+    bool falling_piece;
+    bool fixed_piece;
+}Block;
+
 typedef struct {
     // for board:
     int rows;
     int cols;
 
-    int game_board[BOARD_WIDTH][BOARD_HEIGHT];
+    Block game_board[BOARD_WIDTH][BOARD_HEIGHT];
     //further add
-
 }Game;
 
-typedef struct {
-    int rows;
-    int cols;
-
-    int game_board[BOARD_WIDTH][BOARD_HEIGHT];
-    WINDOW* win;
-}Falling;
 
 typedef struct {
     int rows;
