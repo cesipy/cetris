@@ -1,7 +1,6 @@
-#include <curses.h>
+#include <ncurses.h>
 #include "main.h"
-#include "backend.h"
-#include "block.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -32,12 +31,11 @@ int main (int argc, char* argv[])
     keypad(stdscr, TRUE);       // allow for arrow keys
 
     board = newwin(game->rows, game->cols, 0, 0);
-
-    falling_piece->win = newwin(50, 50, 0, 0);
+    falling_piece->win = newwin(falling_piece->rows, falling_piece->cols, 0, 0);
 
     main_loop();
 
-
+    // free allocated objects
     delete game;
     delete falling_piece;
     endwin();
@@ -55,7 +53,7 @@ void main_loop()
 
         if (input=='q') {break;}
 
-        // Handle user input
+        // handle input
         switch (input)
         {
             case KEY_LEFT:
@@ -78,10 +76,6 @@ void main_loop()
                 break;
         }
 
-        // Clear Tetromino window
-        //werase(falling_piece->win);
-
-        //mvprintw(tetrominoY, tetrominoX * 2, "[]");
 
         display_board(board, game);
 
@@ -92,16 +86,13 @@ void main_loop()
             gravity(falling_piece);
         }
 
-        // Refresh Tetromino window
-        //wrefresh(board);
-        //wrefresh(falling_piece->win);
+
         doupdate();
 
-        // Sleep for a short duration
         usleep(100000);
 
         tick++;
-        // Handle additional game logic (collision detection, row clearing, etc.)
+
     }
 }
 
@@ -116,6 +107,7 @@ void init_colors()
 {
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLUE); // Example color pair
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
     // Define other color pairs
 }
 
@@ -124,19 +116,64 @@ void draw_tetromino_window(Falling* f)
 {
     for (int i = 0; i < f->rows; i++) {
         for (int j = 0; j < f->cols; j++) {
-            // Calculate the coordinates on the window
 
-            // Check if the current cell in the Tetromino is a block (1)
+            int x = i;
+            int y = j;
+
+            // wmove(f->win, x, y);
+            wmove(f->win, i +1, 1);
+            // check if it is a block
             if (f->game_board[i][j]) {
-                // Set the color pair for the Tetromino block (adjust color pair number)
-                wattron(f->win, COLOR_PAIR(1));
-                // Print a block character at the calculated coordinates
+                // set attributes (color)
+                /*wattron(f->win, COLOR_PAIR(1));
+                // print a block
                 waddch(f->win, ' '); // Add your desired character representation
                 wattroff(f->win, COLOR_PAIR(1));
+                 */
+                ADD_BLOCK(f->win, 2);
             }
         }
     }
     wnoutrefresh(f->win);
+}
+
+void display_board(WINDOW* win, Game* g)
+{
+    box(win, 0, 0);
+
+    for(int i=0; i < g->rows; i++)
+    {
+        wmove(win, i +1, 1);
+        for (int j = 0; j < g->cols; j++)
+        {
+            if (g->game_board[i][j] != EMPTY_CELL)
+            {
+                ADD_BLOCK(win, 1);
+            }
+
+            else
+            {
+                ADD_EMPTY(win);
+            }
+
+        }
+    }
+    wnoutrefresh(win);
+}
+
+void gravity(Falling* f)
+{
+    for (int i=0; i<f->rows;i++)
+    {
+        for (int j=0; j<f->cols;j++)
+        {
+            if(f->game_board[i][j] == 1 && i < BOARD_HEIGHT - 1)
+            {
+                f->game_board[i][j] = 0;
+                f->game_board[i+1][j] = 1;
+            }
+        }
+    }
 }
 
 void game_init(Game* g, int rows, int cols)
@@ -185,40 +222,3 @@ void init_falling_piece(Falling* f, int rows, int cols, type type)
     }
 }
 
-void display_board(WINDOW* win, Game* g)
-{
-    box(win, 0, 0);
-
-    for(int i=0; i < g->rows; i++)
-    {
-        wmove(win, i +1, 1);
-        for (int j = 0; j < g->cols; j++)
-        {
-            if (g->game_board[i][j] != EMPTY_CELL)
-            {
-                ADD_BLOCK(win, 1);
-            }
-
-            else
-            {
-                ADD_EMPTY(win);
-            }
-
-        }
-    }
-    wnoutrefresh(win);
-}
-
-void gravity(Falling* f)
-{
-    for (int i=0; i<f->rows;i++)
-    {
-        for (int j=0; j<f->cols;j++)
-        {
-            if(f->game_board[i][j] == 1 && i < BOARD_HEIGHT - 1) {
-                f->game_board[i][j] = 0;
-                f->game_board[i+1][j] = 1;
-            }
-        }
-    }
-}

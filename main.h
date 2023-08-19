@@ -1,14 +1,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <curses.h>
-#include "block.h"
-#include "backend.h"
-#define GRAVITY_TICKS 10
+#include <ncurses.h>
+#define GRAVITY_TICKS 1000
 
 
-#define BOARD_WIDTH 50
-#define BOARD_HEIGHT 50
+#define BOARD_WIDTH  30
+#define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
 #define TETROMINO_SIZE 4
