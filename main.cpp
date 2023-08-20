@@ -185,9 +185,7 @@ void game_init(Game* g, int rows, int cols)
                 g->game_board[i][j].fixed_piece = true;
             }
             // fill game board with empty cells at start -> '0' is emtpy
-
             g->game_board[i][j].value = EMPTY_CELL;
-
         }
     }
 }
@@ -201,7 +199,7 @@ void example_fill_board(Game* g)
     {
         for (int j=0; j< cols; j++)
         {
-            if (i == 6)
+            if (i == 6 && j < BOARD_WIDTH -1 && j >= 1)
             {
                 g->game_board[i][j].value = CELL;
                 g->game_board[i][j].falling_piece = true;
