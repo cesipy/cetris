@@ -5,9 +5,9 @@
 #include <unistd.h>
 
 void game_init(Game*, int rows, int cols);
-void display_board(WINDOW* win, Game* g);
-
-void gravity(Falling* f);
+void display_board(Game* g);
+void gravity(Game* g);
+void example_fill_board(Game* g);
 
 int ch;
 
@@ -18,9 +18,10 @@ Game* game;
 int main (int argc, char* argv[])
 {
     game = new Game;    // alloc memory
-    falling_piece = new Falling ;
-    game_init(game, BOARD_HEIGHT, BOARD_WIDTH);
+    game_init(game, BOARD_HEIGHT, BOARD_WIDTH); // initialize the board struct and all its members
 
+    //fill the board with some blocks to draw
+    example_fill_board(game);
     initscr();
     init_colors();
     noecho();
@@ -30,13 +31,11 @@ int main (int argc, char* argv[])
     keypad(stdscr, TRUE);       // allow for arrow keys
 
     board = newwin(game->rows, game->cols, 0, 0);
-    falling_piece->win = newwin(falling_piece->rows, falling_piece->cols, 0, 0);
-
+    game->win = board;
     main_loop();
 
     // free allocated objects
     delete game;
-    delete falling_piece;
     endwin();
 }
 
@@ -57,7 +56,6 @@ void main_loop()
         {
             case KEY_LEFT:
                 // Move Tetromino left
-
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
@@ -76,25 +74,24 @@ void main_loop()
         }
 
 
-        display_board(board, game);
+        display_board(game);
 
         // Update Tetromino position and draw it
-        draw_tetromino_window(falling_piece);
+        //draw_tetromino_window(falling_piece);
 
         if (tick % GRAVITY_TICKS == 0) {
-            gravity(falling_piece);
+            gravity(game);
         }
 
 
         doupdate();
 
-        usleep(100000);
+        usleep(1000000);
 
         tick++;
 
     }
 }
-
 
 
 int hit_bottom()
@@ -112,8 +109,9 @@ void init_colors()
 
 
 
-void display_board(WINDOW* win, Game* g)
+void display_board(Game* g)
 {
+    WINDOW* win = g->win;
     box(win, 0, 0);
 
     for(int i=0; i < g->rows; i++)
@@ -121,7 +119,7 @@ void display_board(WINDOW* win, Game* g)
         wmove(win, i +1, 1);
         for (int j = 0; j < g->cols; j++)
         {
-            if (g->game_board[i][j] != EMPTY_CELL)
+            if (g->game_board[i][j].value != EMPTY_CELL)
             {
                 ADD_BLOCK(win, 1);
             }
@@ -136,16 +134,21 @@ void display_board(WINDOW* win, Game* g)
     wnoutrefresh(win);
 }
 
-void gravity(Falling* f)
+void gravity(Game* g)
 {
-    for (int i=0; i<f->rows;i++)
+    for (int i=0; i<g->rows;i++)
     {
-        for (int j=0; j<f->cols;j++)
+        for (int j=0; j<g->cols;j++)
         {
-            if(f->game_board[i][j] == 1 && i < BOARD_HEIGHT - 1)
+            if(g->game_board[i][j].value == 1 && g->game_board[i][j].falling_piece && i < BOARD_HEIGHT - 2)
             {
-                f->game_board[i][j] = 0;
-                f->game_board[i+1][j] = 1;
+                // update position of the falling piece on the board
+                g->game_board[i][j].value = 0;
+                g->game_board[i][j].falling_piece = false;
+
+                // update new position and set as falling piece
+                g->game_board[i+1][j].value = 1;
+                g->game_board[i + 1][j].falling_piece = true;
             }
         }
     }
@@ -162,38 +165,38 @@ void game_init(Game* g, int rows, int cols)
     {
         for (int j=0; j < g->cols;j++)
         {
-            if(j == 1) { g->game_board[i][j] = CELL;}
-            else if(i == 10) {g->game_board[i][j] = CELL; }
+            //if(j == 1) { g->game_board[i][j] = CELL;}
+            if(i == 10)
+            {
+                g->game_board[i][j].value = CELL;
+                g->game_board[i][j].fixed_piece = true;
+            }
             // fill game board with empty cells at start -> '0' is emtpy
-            else {
-                g->game_board[i][j] = EMPTY_CELL;
+
+            g->game_board[i][j].value = EMPTY_CELL;
+
+        }
+    }
+}
+
+void example_fill_board(Game* g)
+{
+    int rows = g->cols;
+    int cols = g->cols;
+
+    for (int i=0; i<rows; i++)
+    {
+        for (int j=0; j< cols; j++)
+        {
+            if (i == 6)
+            {
+                g->game_board[i][j].value = CELL;
+                g->game_board[i][j].falling_piece = true;
             }
         }
     }
+
 }
 
-void init_falling_piece(Falling* f, int rows, int cols, type type)
-{
-    f->rows = rows;
-    f->cols = cols;
 
-    for (int i=0; i<f->rows; i++)
-    {
-        for (int j=0; j<f->cols;j++)
-        {
-            f->game_board[i][j] = 0;
-        }
-    }
-
-    if (type == I)
-    {
-        int x = 10;
-        int y = BOARD_WIDTH / 2;
-
-        f->game_board[x][y-1]= 1;
-        f->game_board[x][y]= 1;
-        f->game_board[x][y+1]= 1;
-        f->game_board[x][y+2]= 1;
-    }
-}
 

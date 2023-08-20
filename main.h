@@ -2,7 +2,7 @@
 #define MAIN_H
 
 #include <ncurses.h>
-#define GRAVITY_TICKS 1000
+#define GRAVITY_TICKS 10000
 #define BOARD_WIDTH  30
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
