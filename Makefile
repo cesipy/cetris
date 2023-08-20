@@ -8,3 +8,8 @@ CFLAGS = -c
 LDFLAGS = -lcurses
 
 all: main
+
+
+.PHONY:
+clean: 
+	rm -f main
