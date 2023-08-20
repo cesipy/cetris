@@ -23,7 +23,8 @@ int main (int argc, char* argv[])
     game_init(game, BOARD_HEIGHT, BOARD_WIDTH); // initialize the board struct and all its members
 
     //fill the board with some blocks to draw
-    example_fill_board(game);
+    // example_fill_board(game);
+
     initscr();
     init_colors();
     noecho();
@@ -34,6 +35,8 @@ int main (int argc, char* argv[])
 
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
+    
+    insert_falling_piece(L, game);
     main_loop();
 
     // free allocated objects
@@ -214,8 +217,44 @@ void example_fill_board(Game* g)
             }
         }
     }
-
 }
 
 
 
+void insert_falling_piece(type type, Game* g)
+{
+    int mid = BOARD_WIDTH / 2;
+    switch (type)
+    {
+        case L:
+            insert_block(game, 1, mid - 1 , false);
+            insert_block(game, 1, mid     , false);
+            insert_block(game, 1, mid + 1 , false);
+            insert_block(game, 2, mid + 1 , false);
+            break;
+
+        case I:
+            insert_block(game, 0, mid - 1 , false);
+            insert_block(game, 0, mid     , false);
+            insert_block(game, 0, mid + 1 , false);
+            insert_block(game, 0, mid + 2 , false);
+            break;
+
+        case J:
+            insert_block(game, 0, mid - 1 , false);
+            insert_block(game, 0, mid     , false);
+            insert_block(game, 0, mid + 1 , false);
+            insert_block(game, 1, mid - 1 , false);
+            break;
+
+    }
+}
+
+
+void insert_block(Game* g, int r, int c, bool is_fixed)
+{
+    g->game_board[r][c].value = CELL;
+    g->game_board[r][c].falling_piece = !is_fixed;
+    g->game_board[r][c].fixed_piece = is_fixed;
+    g->game_board[r][c].moved_in_prev_iteration = false;
+}
