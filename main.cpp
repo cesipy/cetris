@@ -14,6 +14,8 @@ int ch;
 WINDOW* board, * falling, *hold, *score;
 Game* game;
 
+#define SLEEP_TIME 10000
+
 
 int main (int argc, char* argv[])
 {
@@ -48,7 +50,7 @@ void main_loop()
     while (!hit_bottom())
     {
         int input = getch();
-
+        // check for 'q' to quit the game
         if (input=='q') {break;}
 
         // handle input
@@ -86,10 +88,10 @@ void main_loop()
 
         doupdate();
 
-        usleep(1000000);
+
+        usleep(SLEEP_TIME);
 
         tick++;
-
     }
 }
 
@@ -99,6 +101,7 @@ int hit_bottom()
     return 0;
 }
 
+
 void init_colors()
 {
     start_color();
@@ -106,7 +109,6 @@ void init_colors()
     init_pair(2, COLOR_BLUE, COLOR_BLACK);
     // Define other color pairs
 }
-
 
 
 void display_board(Game* g)
@@ -134,13 +136,18 @@ void display_board(Game* g)
     wnoutrefresh(win);
 }
 
+
 void gravity(Game* g)
 {
-    for (int i=0; i<g->rows;i++)
+    for (int i=0; i < g->rows; i++)
     {
         for (int j=0; j<g->cols;j++)
         {
-            if(g->game_board[i][j].value == 1 && g->game_board[i][j].falling_piece && i < BOARD_HEIGHT - 2)
+            /* checks for falling pieces/blocks in order to move them every tick */
+            bool condition = g->game_board[i][j].falling_piece &&
+                    !g->game_board[i][j].moved_in_prev_iteration &&
+                    i < (BOARD_HEIGHT - 2);
+            if(g->game_board[i][j].value == 1 && condition)
             {
                 // update position of the falling piece on the board
                 g->game_board[i][j].value = 0;
@@ -149,6 +156,12 @@ void gravity(Game* g)
                 // update new position and set as falling piece
                 g->game_board[i+1][j].value = 1;
                 g->game_board[i + 1][j].falling_piece = true;
+                g->game_board[i + 1][j].moved_in_prev_iteration = true;
+            }
+            else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
+            {
+                // update if block was moved
+                g->game_board[i][j].moved_in_prev_iteration = false;
             }
         }
     }
