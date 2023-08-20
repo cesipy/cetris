@@ -123,14 +123,19 @@ void display_board(Game* g)
         {
             if (g->game_board[i][j].value != EMPTY_CELL)
             {
-                ADD_BLOCK(win, 1);
+                if (g->game_board[i][j].falling_piece)
+                { ADD_BLOCK(win, 1); }
+
+                else
+                {
+                    ADD_BLOCK(win, 2);
+                }
             }
 
             else
             {
                 ADD_EMPTY(win);
             }
-
         }
     }
     wnoutrefresh(win);
@@ -178,14 +183,17 @@ void game_init(Game* g, int rows, int cols)
     {
         for (int j=0; j < g->cols;j++)
         {
+            // fill game board with empty cells at start -> '0' is emtpy
+            g->game_board[i][j].value = EMPTY_CELL;
             //if(j == 1) { g->game_board[i][j] = CELL;}
-            if(i == 10)
+
+            // exammple init for fixed blocks
+            if(i == 20)
             {
                 g->game_board[i][j].value = CELL;
                 g->game_board[i][j].fixed_piece = true;
+                g->game_board[i][j].moved_in_prev_iteration = false;
             }
-            // fill game board with empty cells at start -> '0' is emtpy
-            g->game_board[i][j].value = EMPTY_CELL;
         }
     }
 }
