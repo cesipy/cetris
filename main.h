@@ -23,6 +23,7 @@ enum type {
 };
 
 typedef struct {
+    int value;
     bool falling_piece;
     bool fixed_piece;
 }Block;
@@ -33,6 +34,7 @@ typedef struct {
     int cols;
 
     Block game_board[BOARD_WIDTH][BOARD_HEIGHT];
+    WINDOW* win;
     //further add
 }Game;
 
