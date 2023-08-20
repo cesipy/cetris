@@ -48,6 +48,9 @@ typedef struct {
     int type;
 }Piece;
 
+void insert_falling_piece(type type, Game* g);
+void insert_block(Game* g, int r, int c, bool is_fixed);
+
 const int TETROMINO_I[TETROMINO_SIZE][TETROMINO_SIZE] = {
         {0,0,0,0},
         {1, 1, 1, 1},
