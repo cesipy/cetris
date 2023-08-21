@@ -36,7 +36,10 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
     
-    insert_falling_piece(L, game);
+    //insert_falling_piece(L, game);
+    insert_block(game, 0, 11, false);
+    insert_block(game, 0, 12, false);
+
     main_loop();
 
     // free allocated objects
@@ -109,7 +112,7 @@ void init_colors()
 {
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLUE); // Example color pair
-    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_RED);
     // Define other color pairs
 }
 
@@ -190,7 +193,7 @@ void game_init(Game* g, int rows, int cols)
             g->game_board[i][j].value = EMPTY_CELL;
             //if(j == 1) { g->game_board[i][j] = CELL;}
 
-            // exammple init for fixed blocks
+            // example init for fixed blocks
             if(i == 20)
             {
                 g->game_board[i][j].value = CELL;
