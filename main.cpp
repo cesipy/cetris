@@ -36,9 +36,9 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
     
-    //insert_falling_piece(L, game);
-    insert_block(game, 0, 11, false);
-    insert_block(game, 0, 12, false);
+    insert_falling_piece(L, game);
+    //insert_block(game, 0, 11, false);
+    //insert_block(game, 0, 12, false);
 
     main_loop();
 
@@ -226,30 +226,30 @@ void example_fill_board(Game* g)
 
 void insert_falling_piece(type type, Game* g)
 {
-    int mid = BOARD_WIDTH / 2;
-    switch (type)
+    int mid = 10;
+
+    if (type == L)
     {
-        case L:
-            insert_block(game, 1, mid - 1 , false);
-            insert_block(game, 1, mid     , false);
-            insert_block(game, 1, mid + 1 , false);
-            insert_block(game, 2, mid + 1 , false);
-            break;
+        insert_block(game, 1, mid - 1 , false);
+        insert_block(game, 1, mid     , false);
+        insert_block(game, 1, mid + 1 , false);
+        insert_block(game, 2, mid + 1 , false);
+    }
 
-        case I:
-            insert_block(game, 0, mid - 1 , false);
-            insert_block(game, 0, mid     , false);
-            insert_block(game, 0, mid + 1 , false);
-            insert_block(game, 0, mid + 2 , false);
-            break;
+    else if (type == I)
+    {
+        insert_block(game, 0, mid - 1 , false);
+        insert_block(game, 0, mid     , false);
+        insert_block(game, 0, mid + 1 , false);
+        insert_block(game, 0, mid + 2 , false);
+    }
 
-        case J:
-            insert_block(game, 0, mid - 1 , false);
-            insert_block(game, 0, mid     , false);
-            insert_block(game, 0, mid + 1 , false);
-            insert_block(game, 1, mid - 1 , false);
-            break;
-
+    else if (type == J)
+    {
+        insert_block(game, 0, mid - 1 , false);
+        insert_block(game, 0, mid     , false);
+        insert_block(game, 0, mid + 1 , false);
+        insert_block(game, 1, mid - 1 , false);
     }
 }
 
