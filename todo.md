@@ -5,3 +5,4 @@
 - [ ] fix error of weird block at first position
 - [ ] make whole game structure simpler
 - [ ] add score
+- [ ] make copy of gameboard and return new gameboard after call of gravity function
