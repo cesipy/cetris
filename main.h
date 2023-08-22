@@ -48,6 +48,11 @@ typedef struct {
     int type;
 }Piece;
 
+typedef struct {
+    int x;
+    int y;
+}Coordinate;
+
 void insert_falling_piece(type type, Game* g);
 void insert_block(Game* g, int r, int c, bool is_fixed);
 
