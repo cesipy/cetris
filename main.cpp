@@ -16,7 +16,6 @@ Game* game;
 
 #define SLEEP_TIME 10000
 
-
 int main (int argc, char* argv[])
 {
     game = new Game;    // alloc memory
@@ -150,19 +149,21 @@ void display_board(Game* g)
 
 void gravity(Game* g)
 {
-    for (int i=0; i < g->rows; i++)
+    for (int i=g->rows-1; i > 0; i--)
     {
-        for (int j=0; j<g->cols;j++)
+        for (int j= g->cols-1; j > 0; j--)
         {
             /* checks for falling pieces/blocks in order to move them every tick */
-            bool condition = g->game_board[i][j].falling_piece &&
+            bool condition =
+                    g->game_board[i][j].value == 1 &&
+                    g->game_board[i][j].falling_piece &&
                     !g->game_board[i][j].moved_in_prev_iteration &&
                     i < (BOARD_HEIGHT - 2);
-            if(g->game_board[i][j].value == 1 && condition)
+            if(condition)
             {
                 // update position of the falling piece on the board
-                g->game_board[i][j].value = 0;
-                g->game_board[i][j].falling_piece = false;
+                 g->game_board[i][j].value = 0;
+                 g->game_board[i][j].falling_piece = false;
 
                 // update new position and set as falling piece
                 g->game_board[i+1][j].value = 1;
