@@ -50,7 +50,7 @@ void main_loop()
 {
     int tick = 0;
 
-    while (!hit_bottom())
+    while (game->running)
     {
         int input = getch();
         // check for 'q' to quit the game
@@ -83,12 +83,12 @@ void main_loop()
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
         }
-        
+
         doupdate();             // update all windows
 
         usleep(SLEEP_TIME);     // sleep for a bit
 
-        tick++
+        tick++;
     }
 }
 
@@ -154,13 +154,10 @@ void gravity(Game* g)
             if(condition)
             {
                 // update position of the falling piece on the board
-                 g->game_board[i][j].value = 0;
-                 g->game_board[i][j].falling_piece = false;
+                set_block(i, j, 0, false, false );
 
                 // update new position and set as falling piece
-                g->game_board[i+1][j].value = 1;
-                g->game_board[i + 1][j].falling_piece = true;
-                g->game_board[i + 1][j].moved_in_prev_iteration = true;
+                set_block(i+1, j, 1, true, true);
             }
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
             {
@@ -175,6 +172,7 @@ void game_init(Game* g, int rows, int cols)
 {
     g->rows = rows;
     g->cols = cols;
+    g->running = true;
 
     // further implementation
 
@@ -189,9 +187,8 @@ void game_init(Game* g, int rows, int cols)
             // example init for fixed blocks
             if(i == 20)
             {
-                g->game_board[i][j].value = CELL;
-                g->game_board[i][j].fixed_piece = true;
-                g->game_board[i][j].moved_in_prev_iteration = false;
+                set_block(i, j, CELL, false, false);
+
             }
         }
     }
@@ -253,4 +250,22 @@ void insert_block(Game* g, int r, int c, bool is_fixed)
     g->game_board[r][c].falling_piece = !is_fixed;
     g->game_board[r][c].fixed_piece = is_fixed;
     g->game_board[r][c].moved_in_prev_iteration = false;
+}
+
+
+
+
+
+bool is_valid_block(int rows, int cols)
+{
+    return true;
+}
+
+
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration)
+{
+    game->game_board[row][col].value         = value;
+    game->game_board[row][col].falling_piece = is_falling;
+    game->game_board[row][col].fixed_piece   =  !is_falling;
+    game->game_board[row][col].moved_in_prev_iteration  =  moved_in_prev_iteration;
 }
