@@ -7,20 +7,22 @@
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
-#define TETROMINO_SIZE 4
 
 #define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
 #define ADD_EMPTY(w) waddch((w), ' '); waddch((w), ' ')
 
-void main_loop();
-int hit_bottom();
-void init_colors();
-
+/* ----------------------------------------------------------- */
 
 enum type {
      I, J, L
 };
+
+
+enum direction {
+    left, right
+};
+
 
 typedef struct {
     int value;
@@ -29,6 +31,7 @@ typedef struct {
     bool moved_in_prev_iteration;
 }Block;
 
+
 typedef struct {
     // for board:
     int rows;
@@ -36,6 +39,7 @@ typedef struct {
 
     Block game_board[BOARD_WIDTH][BOARD_HEIGHT];
     WINDOW* win;
+    bool running;
     //further add
 }Game;
 
@@ -48,36 +52,22 @@ typedef struct {
     int type;
 }Piece;
 
+
 typedef struct {
     int x;
     int y;
 }Coordinate;
 
+/* ----------------------------------------------------------- */
+
 void insert_falling_piece(type type, Game* g);
 void insert_block(Game* g, int r, int c, bool is_fixed);
+void main_loop();
+int hit_bottom();
+void init_colors();
 
-const int TETROMINO_I[TETROMINO_SIZE][TETROMINO_SIZE] = {
-        {0,0,0,0},
-        {1, 1, 1, 1},
-        {0,0,0,0},
-        {0,0,0,0}
-};
-
-
-const int TETROMINO_J[TETROMINO_SIZE][TETROMINO_SIZE] = {
-        {1,0,0,0},
-        {1, 1, 1, 0},
-        {0,0,0,0},
-        {0,0,0,0}
-};
-
-const int TETROMINO_L[TETROMINO_SIZE][TETROMINO_SIZE] = {
-        {1,0,0,0},
-        {1, 1, 1, 0},
-        {0,0,0,0},
-        {0,0,0,0}
-};
-
-const int* types[3] = {&TETROMINO_I[0][0], &TETROMINO_J[0][0], &TETROMINO_L[0][0]};
+void move_piece(direction);
+bool is_valid_block(int rows, int cols);
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
 
 #endif
