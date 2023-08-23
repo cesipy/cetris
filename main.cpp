@@ -61,9 +61,11 @@ void main_loop()
         {
             case KEY_LEFT:
                 // Move Tetromino left
+                move_piece(left);
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
+                move_piece(right);
                 break;
             case KEY_UP:
                 // Rotate Tetromino (implement the rotation logic)
@@ -253,15 +255,62 @@ void insert_block(Game* g, int r, int c, bool is_fixed)
 }
 
 
+void move_piece(direction dir)
+{
+    for (int i=0; i < game->rows; i++)
+    {
+        for (int j=0; j<game->cols; j++)
+        {
+            bool condition = game->game_board[i][j].value == CELL &&
+                             game->game_board[i][j].falling_piece;
+
+            if (condition)
+            {
+                // check if new positions for each block are valid
+                int new_j = (dir == left) ? j-1 : j+1;
+                bool is_available = is_valid_block(i, new_j);
+
+                if (!is_available) { return; }
+            }
+        }
+    }
 
 
+    // run again through game board to move each block
+    for (int i=0; i<game->rows; i++)
+    {
+        for (int j=0; j<game->cols; j++)
+        {
+            bool condition = game->game_board[i][j].value == CELL &&
+                             game->game_board[i][j].falling_piece;
+
+            if (condition)
+            {
+                // delete old block
+                set_block(i, j, EMPTY_CELL, false, false);
+
+                // set new block
+                int new_j = (dir == left) ? j-1 : j+1;
+                set_block(i, new_j, CELL, true, true);
+            }
+        }
+    }
+}
 
 bool is_valid_block(int rows, int cols)
 {
     return true;
 }
 
-
+/**
+ * sets a block in a given row and column to a specified value with several attributes
+ *
+ * @param row
+ * @param col
+ * @param value
+ * @param is_falling
+ * @param moved_in_prev_iteration
+ */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration)
 {
     game->game_board[row][col].value         = value;
