@@ -36,8 +36,6 @@ int main (int argc, char* argv[])
     game->win = board;
     
     insert_falling_piece(L, game);
-    //insert_block(game, 0, 11, false);
-    //insert_block(game, 0, 12, false);
 
     main_loop();
 
@@ -66,14 +64,12 @@ void main_loop()
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
-                //tetrominoX++;
                 break;
             case KEY_UP:
                 // Rotate Tetromino (implement the rotation logic)
                 // Example: currentTetromino = rotate_tetromino(currentTetromino);
                 break;
             case KEY_DOWN:
-                //tetrominoY++;
                 // Move Tetromino down faster (if desired)
                 break;
             default:
@@ -83,20 +79,16 @@ void main_loop()
 
         display_board(game);
 
-        // Update Tetromino position and draw it
-        //draw_tetromino_window(falling_piece);
-
+        // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
         }
+        
+        doupdate();             // update all windows
 
+        usleep(SLEEP_TIME);     // sleep for a bit
 
-        doupdate();
-
-
-        usleep(SLEEP_TIME);
-
-        tick++;
+        tick++
     }
 }
 
