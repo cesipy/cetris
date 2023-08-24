@@ -37,7 +37,7 @@ typedef struct {
     int rows;
     int cols;
 
-    Block game_board[BOARD_WIDTH][BOARD_HEIGHT];
+    Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
     WINDOW* win;
     bool running;
     //further add
@@ -69,5 +69,8 @@ void init_colors();
 void move_piece(direction);
 bool is_valid_block(int rows, int cols);
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
+
+void alloc_game_board();
+void dealloc_game_board();
 
 #endif

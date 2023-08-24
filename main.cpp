@@ -42,6 +42,7 @@ int main (int argc, char* argv[])
     // free allocated objects
     delete game;
     endwin();
+    //dealloc_game_board();
 }
 
 /*  ------------------------------  */
@@ -65,7 +66,6 @@ void main_loop()
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
-                printf("received!\n");
                 move_piece(right);
                 break;
             case KEY_UP:
@@ -176,6 +176,7 @@ void game_init(Game* g, int rows, int cols)
     g->cols = cols;
     g->running = true;
 
+    //alloc_game_board();
     // further implementation
 
     for (int i=0; i<g->rows;i++)
@@ -183,8 +184,9 @@ void game_init(Game* g, int rows, int cols)
         for (int j=0; j < g->cols;j++)
         {
             // fill game board with empty cells at start -> '0' is emtpy
-            g->game_board[i][j].value = EMPTY_CELL;
-            //if(j == 1) { g->game_board[i][j] = CELL;}
+            //g->game_board[i][j].value = EMPTY_CELL;
+
+            set_block(i, j, EMPTY_CELL, false, false);
 
             // example init for fixed blocks
             if(i == 20)
@@ -194,6 +196,15 @@ void game_init(Game* g, int rows, int cols)
         }
     }
 }
+
+/*void dealloc_game_board()
+{
+    for (int i = 0; i < game->rows; i++) {
+        delete[] game->game_board[i];
+    }
+    delete[] game->game_board;
+}*/
+
 
 
 void example_fill_board(Game* g)
@@ -247,9 +258,9 @@ void insert_falling_piece(type type, Game* g)
 
 void insert_block(Game* g, int r, int c, bool is_fixed)
 {
-    g->game_board[r][c].value = CELL;
+    g->game_board[r][c].value         = CELL;
     g->game_board[r][c].falling_piece = !is_fixed;
-    g->game_board[r][c].fixed_piece = is_fixed;
+    g->game_board[r][c].fixed_piece   = is_fixed;
     g->game_board[r][c].moved_in_prev_iteration = false;
 }
 
@@ -288,7 +299,13 @@ void move_piece(direction dir)
                 set_block(i, j, EMPTY_CELL, false, false);
 
                 // set new block
-                int new_j = (dir == left) ? j-1 : j+1;
+                int new_j;
+                if (dir == right)
+                { new_j = j+1; }
+
+                else
+                { new_j = j-1; }
+
                 set_block(i, new_j, CELL, true, true);
             }
         }
@@ -320,7 +337,24 @@ bool is_valid_block(int rows, int cols)
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration)
 {
     game->game_board[row][col].value         = value;
-    game->game_board[row][col].falling_piece = is_falling;
-    game->game_board[row][col].fixed_piece   =  !is_falling;
-    game->game_board[row][col].moved_in_prev_iteration  =  moved_in_prev_iteration;
+    if (value == EMPTY_CELL)
+    {
+        game->game_board[row][col].falling_piece = false;
+        game->game_board[row][col].fixed_piece   =  false;
+        game->game_board[row][col].moved_in_prev_iteration  =  false;
+    }
+
+    else
+    {
+        game->game_board[row][col].falling_piece = is_falling;
+        game->game_board[row][col].fixed_piece = !is_falling;
+        game->game_board[row][col].moved_in_prev_iteration = moved_in_prev_iteration;
+    }
 }
+
+/*void alloc_game_board() {
+    game->game_board = new Block*[game->rows];
+    for (int i = 0; i < game->rows; i++) {
+        game->game_board[i] = new Block[game->cols];
+    }
+}*/
