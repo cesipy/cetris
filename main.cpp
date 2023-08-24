@@ -65,11 +65,11 @@ void main_loop()
                 break;
             case KEY_RIGHT:
                 // Move Tetromino right
+                printf("received!\n");
                 move_piece(right);
                 break;
             case KEY_UP:
                 // Rotate Tetromino (implement the rotation logic)
-                // Example: currentTetromino = rotate_tetromino(currentTetromino);
                 break;
             case KEY_DOWN:
                 // Move Tetromino down faster (if desired)
@@ -77,7 +77,6 @@ void main_loop()
             default:
                 break;
         }
-
 
         display_board(game);
 
@@ -170,6 +169,7 @@ void gravity(Game* g)
     }
 }
 
+
 void game_init(Game* g, int rows, int cols)
 {
     g->rows = rows;
@@ -190,11 +190,11 @@ void game_init(Game* g, int rows, int cols)
             if(i == 20)
             {
                 set_block(i, j, CELL, false, false);
-
             }
         }
     }
 }
+
 
 void example_fill_board(Game* g)
 {
@@ -213,7 +213,6 @@ void example_fill_board(Game* g)
         }
     }
 }
-
 
 
 void insert_falling_piece(type type, Game* g)
@@ -275,7 +274,6 @@ void move_piece(direction dir)
         }
     }
 
-
     // run again through game board to move each block
     for (int i=0; i<game->rows; i++)
     {
@@ -297,10 +295,18 @@ void move_piece(direction dir)
     }
 }
 
+
 bool is_valid_block(int rows, int cols)
 {
-    return true;
+    bool condition1 = rows >= 0 && rows < game->rows;
+    bool condition2 = cols >= 0 && cols < game->cols;
+
+    if (condition1 && condition2)
+    { return true; }
+
+    return false;
 }
+
 
 /**
  * sets a block in a given row and column to a specified value with several attributes
