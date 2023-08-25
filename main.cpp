@@ -267,14 +267,18 @@ void insert_block(Game* g, int r, int c, bool is_fixed)
 
 
 void move_piece(direction dir) {
-    for (int i = 0; i < game->rows; i++) {
-        for (int j = 0; j < game->cols; j++) {
+    for (int i = game->rows -1; i >= 0; i--)
+    {
+        for (int j = game->cols - 1; j >= 0; j--)
+        {
             bool condition = game->game_board[i][j].value == CELL &&
                              game->game_board[i][j].falling_piece;
 
-            if (condition) {
+            if (condition)
+            {
                 int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
-                if (!is_valid_block(i, new_j)) {
+                if (!is_valid_block(i, new_j))
+                {
                     printf("reached");
                     return;
                 }
@@ -282,32 +286,62 @@ void move_piece(direction dir) {
         }
     }
 
-    for (int i = 0; i < game->rows; i++) {
-        for (int j = 0; j < game->cols; j++) {
-            bool condition = game->game_board[i][j].value == CELL &&
-                             game->game_board[i][j].falling_piece;
+    // traverse the game board in the direction based on the dir parameter
+    if (dir == right)
+    {
+        for (int i = game->rows -1; i >= 0; i--)
+        {
+            for (int j = game->cols - 1; j >= 0; j--)
+            {
+                bool condition = game->game_board[i][j].value == CELL &&
+                                 game->game_board[i][j].falling_piece;
 
-            if (condition) {
-                // calculate the new column index
-                int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
-
-                if (is_valid_block(i, new_j) && new_j < game->cols)
+                if (condition)
                 {
-                    printf("Moving block from (%d, %d) to (%d, %d)\n", i, j, i, new_j); // Debug print
+                    // calculate the new column index
+                    int new_j = j + 1;
 
-                    // delete old block
-                    set_block(i, j, EMPTY_CELL, false, false);
+                    if (is_valid_block(i, new_j) )
+                    {
+                        // delete old block
+                        set_block(i, j, EMPTY_CELL, false, false);
 
-                    // set new block at the updated position
-                    set_block(i, new_j, CELL, true, false);
-                }
-                else
-                {
-                    printf("Invalid move from (%d, %d) to (%d, %d)\n", i, j, i, new_j); // Debug print
+                        // set new block at the updated position
+                        set_block(i, new_j, CELL, true, false);
+                    }
                 }
             }
         }
     }
+
+    // if dir == left, traverse the list the way around
+    else
+    {
+        for (int i = 0; i < game->rows; i++)
+        {
+            for (int j = 0; j < game->cols; j++)
+            {
+                bool condition = game->game_board[i][j].value == CELL &&
+                                 game->game_board[i][j].falling_piece;
+
+                if (condition)
+                {
+                    // calculate the new column index
+                    int new_j = j - 1;
+
+                    if (is_valid_block(i, new_j))
+                    {
+                        // delete old block
+                        set_block(i, j, EMPTY_CELL, false, false);
+
+                        // set new block at the updated position
+                        set_block(i, new_j, CELL, true, false);
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 
