@@ -267,50 +267,32 @@ void insert_block(Game* g, int r, int c, bool is_fixed)
 
 void move_piece(direction dir)
 {
-    for (int i=0; i < game->rows; i++)
+    for (int i = 0; i < game->rows; i++)
     {
-        for (int j=0; j<game->cols; j++)
+        for (int j = 0; j < game->cols; j++)
         {
             bool condition = game->game_board[i][j].value == CELL &&
                              game->game_board[i][j].falling_piece;
 
             if (condition)
             {
-                // check if new positions for each block are valid
-                int new_j = (dir == left) ? j-1 : j+1;
-                bool is_available = is_valid_block(i, new_j);
+                // Calculate the new column index
+                int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
 
-                if (!is_available) { return; }
-            }
-        }
-    }
+                // Check if the new position is valid
+                if (is_valid_block(i, new_j))
+                {
+                    // Delete old block
+                    set_block(i, j, EMPTY_CELL, false, false);
 
-    // run again through game board to move each block
-    for (int i=0; i<game->rows; i++)
-    {
-        for (int j=0; j<game->cols; j++)
-        {
-            bool condition = game->game_board[i][j].value == CELL &&
-                             game->game_board[i][j].falling_piece;
-
-            if (condition)
-            {
-                // delete old block
-                set_block(i, j, EMPTY_CELL, false, false);
-
-                // set new block
-                int new_j;
-                if (dir == right)
-                { new_j = j+1; }
-
-                else
-                { new_j = j-1; }
-
-                set_block(i, new_j, CELL, true, true);
+                    // Set new block at the updated position
+                    set_block(i, new_j, CELL, true, true);
+                }
             }
         }
     }
 }
+
 
 
 bool is_valid_block(int rows, int cols)
