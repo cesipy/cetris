@@ -26,6 +26,7 @@ int main (int argc, char* argv[])
 
     initscr();
     init_colors();
+    resizeterm(BOARD_HEIGHT, BOARD_WIDTH);
     noecho();
     resize_term(BOARD_HEIGHT,  BOARD_WIDTH);
     timeout(0);
@@ -265,28 +266,44 @@ void insert_block(Game* g, int r, int c, bool is_fixed)
 }
 
 
-void move_piece(direction dir)
-{
-    for (int i = 0; i < game->rows; i++)
-    {
-        for (int j = 0; j < game->cols; j++)
-        {
+void move_piece(direction dir) {
+    for (int i = 0; i < game->rows; i++) {
+        for (int j = 0; j < game->cols; j++) {
             bool condition = game->game_board[i][j].value == CELL &&
                              game->game_board[i][j].falling_piece;
 
-            if (condition)
-            {
-                // Calculate the new column index
+            if (condition) {
+                int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
+                if (!is_valid_block(i, new_j)) {
+                    printf("reached");
+                    return;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < game->rows; i++) {
+        for (int j = 0; j < game->cols; j++) {
+            bool condition = game->game_board[i][j].value == CELL &&
+                             game->game_board[i][j].falling_piece;
+
+            if (condition) {
+                // calculate the new column index
                 int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
 
-                // Check if the new position is valid
-                if (is_valid_block(i, new_j))
+                if (is_valid_block(i, new_j) && new_j < game->cols)
                 {
-                    // Delete old block
+                    printf("Moving block from (%d, %d) to (%d, %d)\n", i, j, i, new_j); // Debug print
+
+                    // delete old block
                     set_block(i, j, EMPTY_CELL, false, false);
 
-                    // Set new block at the updated position
-                    set_block(i, new_j, CELL, true, true);
+                    // set new block at the updated position
+                    set_block(i, new_j, CELL, true, false);
+                }
+                else
+                {
+                    printf("Invalid move from (%d, %d) to (%d, %d)\n", i, j, i, new_j); // Debug print
                 }
             }
         }
@@ -295,7 +312,7 @@ void move_piece(direction dir)
 
 
 
-bool is_valid_block(int rows, int cols)
+    bool is_valid_block(int rows, int cols)
 {
     bool condition1 = rows >= 0 && rows < game->rows;
     bool condition2 = cols >= 0 && cols < game->cols;
