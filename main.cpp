@@ -16,6 +16,8 @@ Game* game;
 
 #define SLEEP_TIME 10000
 
+/*  ------------------------------  */
+
 int main (int argc, char* argv[])
 {
     game = new Game;    // alloc memory
@@ -43,7 +45,6 @@ int main (int argc, char* argv[])
     // free allocated objects
     delete game;
     endwin();
-    //dealloc_game_board();
 }
 
 /*  ------------------------------  */
@@ -233,36 +234,27 @@ void insert_falling_piece(type type, Game* g)
 
     if (type == L)
     {
-        insert_block(game, 1, mid - 1 , false);
-        insert_block(game, 1, mid     , false);
-        insert_block(game, 1, mid + 1 , false);
-        insert_block(game, 2, mid + 1 , false);
+        set_block(1, mid - 1, CELL, true, false);
+        set_block(1, mid    , CELL, true, false);
+        set_block(1, mid + 1, CELL, true, false);
+        set_block(2, mid + 1, CELL, true, false);
     }
 
     else if (type == I)
     {
-        insert_block(game, 0, mid - 1 , false);
-        insert_block(game, 0, mid     , false);
-        insert_block(game, 0, mid + 1 , false);
-        insert_block(game, 0, mid + 2 , false);
+        set_block(0, mid - 1, CELL, true, false);
+        set_block(0, mid    , CELL, true, false);
+        set_block(0, mid + 1, CELL, true, false);
+        set_block(0, mid + 2, CELL, true, false);
     }
 
     else if (type == J)
     {
-        insert_block(game, 0, mid - 1 , false);
-        insert_block(game, 0, mid     , false);
-        insert_block(game, 0, mid + 1 , false);
-        insert_block(game, 1, mid - 1 , false);
+        set_block(1, mid - 1, CELL, true, false);
+        set_block(1, mid    , CELL, true, false);
+        set_block(1, mid + 1, CELL, true, false);
+        set_block(2, mid - 1, CELL, true, false);
     }
-}
-
-
-void insert_block(Game* g, int r, int c, bool is_fixed)
-{
-    g->game_board[r][c].value         = CELL;
-    g->game_board[r][c].falling_piece = !is_fixed;
-    g->game_board[r][c].fixed_piece   = is_fixed;
-    g->game_board[r][c].moved_in_prev_iteration = false;
 }
 
 

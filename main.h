@@ -61,7 +61,6 @@ typedef struct {
 /* ----------------------------------------------------------- */
 
 void insert_falling_piece(type type, Game* g);
-void insert_block(Game* g, int r, int c, bool is_fixed);
 void main_loop();
 int hit_bottom();
 void init_colors();
