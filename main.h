@@ -40,6 +40,8 @@ typedef struct {
     Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
     WINDOW* win;
     bool running;
+    char bottom_height;     // number of bottom row
+    bool need_new_piece;    // is a piece still falling, or is a new one needed
     //further add
 }Game;
 

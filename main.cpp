@@ -177,6 +177,8 @@ void game_init(Game* g, int rows, int cols)
     g->rows = rows;
     g->cols = cols;
     g->running = true;
+    g->bottom_height = BOARD_HEIGHT - 1;
+    g->need_new_piece = true;               // start with a new falling piece
 
     //alloc_game_board();
     // further implementation
@@ -230,7 +232,7 @@ void example_fill_board(Game* g)
 
 void insert_falling_piece(type type, Game* g)
 {
-    int mid = 10;
+    int mid = 8;
 
     if (type == L)
     {
@@ -338,7 +340,7 @@ void move_piece(direction dir) {
 
 
 
-    bool is_valid_block(int rows, int cols)
+bool is_valid_block(int rows, int cols)
 {
     bool condition1 = rows >= 0 && rows < game->rows;
     bool condition2 = cols >= 0 && cols < game->cols;
