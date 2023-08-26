@@ -56,7 +56,7 @@ void main_loop()
     {
         if (game->need_new_piece)
         {
-            insert_falling_piece(static_cast<type>(piece_counter), game);
+            insert_falling_piece(I, game);
             piece_counter_increase();
 
             game->need_new_piece = false;
@@ -208,15 +208,6 @@ void game_init(Game* g, int rows, int cols)
     }
 }
 
-/*void dealloc_game_board()
-{
-    for (int i = 0; i < game->rows; i++) {
-        delete[] game->game_board[i];
-    }
-    delete[] game->game_board;
-}*/
-
-
 
 void example_fill_board(Game* g)
 {
@@ -251,10 +242,10 @@ void insert_falling_piece(type type, Game* g)
 
     else if (type == I)
     {
-        set_block(0, mid - 1, CELL, true, false);
-        set_block(0, mid    , CELL, true, false);
-        set_block(0, mid + 1, CELL, true, false);
-        set_block(0, mid + 2, CELL, true, false);
+        set_block(1, mid - 1, CELL, true, false);
+        set_block(1, mid    , CELL, true, false);
+        set_block(1, mid + 1, CELL, true, false);
+        set_block(1, mid + 2, CELL, true, false);
     }
 
     else if (type == J)
@@ -350,7 +341,7 @@ void move_piece(direction dir) {
 bool is_valid_block(int rows, int cols)
 {
     bool condition1 = rows >= 0 && rows < game->rows;
-    bool condition2 = cols >= 0 && cols < game->cols;
+    bool condition2 = cols >= 0 && cols <= BOARD_EDGE_RIGHT;
 
     if (condition1 && condition2)
     { return true; }
@@ -359,15 +350,6 @@ bool is_valid_block(int rows, int cols)
 }
 
 
-/**
- * sets a block in a given row and column to a specified value with several attributes
- *
- * @param row
- * @param col
- * @param value
- * @param is_falling
- * @param moved_in_prev_iteration
- */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration)
 {
     game->game_board[row][col].value         = value;
@@ -393,3 +375,8 @@ void piece_counter_increase()
     piece_counter = piece_counter % (AMOUNT_OF_PIECES + 1);
 }
 
+
+void falling_to_fixed()
+{
+
+}

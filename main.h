@@ -8,6 +8,7 @@
 #define EMPTY_CELL 0
 #define CELL 1
 #define AMOUNT_OF_PIECES 2
+#define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
 
 #define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
@@ -68,10 +69,24 @@ void main_loop();
 int hit_bottom();
 void init_colors();
 
+/**
+ * move a piece in direction 'dir'.
+ */
 void move_piece(direction);
 bool is_valid_block(int rows, int cols);
+
+/**
+ * sets a block in a given row and column to a specified value with several attributes
+ *
+ * @param row
+ * @param col
+ * @param value
+ * @param is_falling
+ * @param moved_in_prev_iteration
+ */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
 void piece_counter_increase();
+void falling_to_fixed();
 
 void alloc_game_board();
 void dealloc_game_board();
