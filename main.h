@@ -7,6 +7,7 @@
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
+#define AMOUNT_OF_PIECES 2
 
 #define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
@@ -70,6 +71,7 @@ void init_colors();
 void move_piece(direction);
 bool is_valid_block(int rows, int cols);
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
+void piece_counter_increase();
 
 void alloc_game_board();
 void dealloc_game_board();

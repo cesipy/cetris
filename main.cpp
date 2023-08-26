@@ -13,6 +13,7 @@ int ch;
 
 WINDOW* board, * falling, *hold, *score;
 Game* game;
+int piece_counter = 0;
 
 #define SLEEP_TIME 10000
 
@@ -37,8 +38,6 @@ int main (int argc, char* argv[])
 
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
-    
-    insert_falling_piece(L, game);
 
     main_loop();
 
@@ -55,6 +54,14 @@ void main_loop()
 
     while (game->running)
     {
+        if (game->need_new_piece)
+        {
+            insert_falling_piece(static_cast<type>(piece_counter), game);
+            piece_counter_increase();
+
+            game->need_new_piece = false;
+        }
+
         int input = getch();
         // check for 'q' to quit the game
         if (input=='q') {break;}
@@ -379,9 +386,10 @@ void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_
     }
 }
 
-/*void alloc_game_board() {
-    game->game_board = new Block*[game->rows];
-    for (int i = 0; i < game->rows; i++) {
-        game->game_board[i] = new Block[game->cols];
-    }
-}*/
+
+void piece_counter_increase()
+{
+    piece_counter++;
+    piece_counter = piece_counter % (AMOUNT_OF_PIECES + 1);
+}
+
