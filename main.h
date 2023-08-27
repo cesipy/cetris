@@ -22,7 +22,7 @@ enum type {
 
 
 enum direction {
-    left, right
+    left, right, down
 };
 
 
@@ -87,6 +87,9 @@ bool is_valid_block(int rows, int cols);
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
 void piece_counter_increase();
 void falling_to_fixed();
+bool can_piece_move(direction);
+bool can_piece_rotate();
+bool is_empty_block(int, int);
 
 void alloc_game_board();
 void dealloc_game_board();
