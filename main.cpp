@@ -164,11 +164,24 @@ void gravity(Game* g)
 
             if(condition && i < game->bottom_height)
             {
-                // update position of the falling piece on the board
-                set_block(i, j, 0, false, false );
+                // check if the blocks below are free
+                bool can_move_down = can_piece_move(down);
+                std::cout<<"can move down: "<<can_move_down;
+                if (can_move_down)
+                {
+                    // update position of the falling piece on the board
+                    set_block(i, j, 0, false, false );
 
-                // update new position and set as falling piece
-                set_block(i+1, j, 1, true, true);
+                    // update new position and set as falling piece
+                    set_block(i+1, j, 1, true, true);
+                }
+                else
+                {
+                    falling_to_fixed();
+                    game->need_new_piece = true;
+                    return;
+                }
+
             }
 
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
@@ -335,7 +348,7 @@ void move_piece(direction dir) {
 
 bool is_valid_block(int rows, int cols)
 {
-    bool condition1 = rows >= 0 && rows < game->rows;
+    bool condition1 = rows >= 0 && rows < game->rows - 2;
     bool condition2 = cols >= 0 && cols <= BOARD_EDGE_RIGHT;
 
     if (condition1 && condition2)
@@ -424,9 +437,9 @@ bool can_piece_move(direction dir)
                 //std::cout<<"valid block: " << valid_block << ", empty block: "<<empty_block<<"\n";
 
                 // check if the new position is valid and not colliding with other pieces
-                if (!is_valid_block(new_i, new_j) )//|| !is_empty_block(new_i, new_j))
+                if (!is_valid_block(new_i, new_j) || !is_empty_block(new_i, new_j))
                 {
-                    return false; // Collision detected
+                    return false; // collision detected
                 }
             }
         }
@@ -437,7 +450,8 @@ bool can_piece_move(direction dir)
 
 bool is_empty_block(int row, int col)
 {
-    if (game->game_board[row][col].value == EMPTY_CELL)
+    bool condition = !game->game_board[row][col].fixed_piece;
+    if (condition)
     {
         return true;
     }
