@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <iostream>
 
 void game_init(Game*, int rows, int cols);
 void display_board(Game* g);
@@ -169,6 +170,7 @@ void gravity(Game* g)
                 // update new position and set as falling piece
                 set_block(i+1, j, 1, true, true);
             }
+
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
             {
                 // update if block was moved
@@ -266,24 +268,10 @@ void insert_falling_piece(type type, Game* g)
 
 
 void move_piece(direction dir) {
-    for (int i = game->rows -1; i >= 0; i--)
-    {
-        for (int j = game->cols - 1; j >= 0; j--)
-        {
-            bool condition = game->game_board[i][j].value == CELL &&
-                             game->game_board[i][j].falling_piece;
+    bool can_move = can_piece_move(dir);
 
-            if (condition)
-            {
-                int new_j = (dir == left) ? j - 1 : (dir == right) ? j + 1 : j;
-                if (!is_valid_block(i, new_j))
-                {
-                    printf("reached");
-                    return;
-                }
-            }
-        }
-    }
+    if (!can_move) { printf("ey"); return; }
+    printf("reach");
 
     // traverse the game board in the direction based on the dir parameter
     if (dir == right)
@@ -398,4 +386,59 @@ void falling_to_fixed()
             }
         }
     }
+}
+
+
+bool can_piece_move(direction dir)
+{
+    for (int i = 0; i < game->rows; i++)
+    {
+        for (int j = 0; j < game->cols; j++)
+        {
+            bool condition = game->game_board[i][j].value == CELL &&
+                             game->game_board[i][j].falling_piece;
+
+            if (condition)
+            {
+                int new_i = i;
+                int new_j = j;
+
+                if (dir == left)
+                {
+                    new_j = j - 1;
+                }
+
+                else if (dir == right)
+                {
+                    new_j = j + 1;
+                }
+
+                else if (dir == down)
+                {
+                    new_i = i + 1;
+                }
+                bool valid_block = is_valid_block(new_i, new_j);
+
+                bool empty_block = is_empty_block(new_i, new_j);
+
+                std::cout<<"valid block: " << valid_block << ", empty block: "<<empty_block<<"\n";
+
+                // check if the new position is valid and not colliding with other pieces
+                if (!is_valid_block(new_i, new_j) || !is_empty_block(new_i, new_j)) {
+                    return false; // Collision detected
+                }
+            }
+        }
+    }
+    return true; // no collision detected
+}
+
+
+bool is_empty_block(int row, int col)
+{
+    if (game->game_board[row][col].value == EMPTY_CELL)
+    {
+        return true;
+    }
+    return false;
 }
