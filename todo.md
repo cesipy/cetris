@@ -5,4 +5,8 @@
 - [ ] fix error of weird block at first position
 - [ ] make whole game structure simpler
 - [ ] add score
-- [ ] make copy of gameboard and return new gameboard after call of gravity function
+- [ ] make size appropriate (height)
+- [ ] fix bug on left edge
+- [ ] rotation
+- [ ] press down key to immediately move piece down(multiple iterations of gravity)
+- [ ] switch the type of falling pieces randomly
