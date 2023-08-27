@@ -159,9 +159,9 @@ void gravity(Game* g)
             bool condition =
                     g->game_board[i][j].value == 1 &&
                     g->game_board[i][j].falling_piece &&
-                    !g->game_board[i][j].moved_in_prev_iteration &&
-                    i < (BOARD_HEIGHT - 2);
-            if(condition)
+                    !g->game_board[i][j].moved_in_prev_iteration;
+
+            if(condition && i < game->bottom_height)
             {
                 // update position of the falling piece on the board
                 set_block(i, j, 0, false, false );
@@ -174,6 +174,13 @@ void gravity(Game* g)
                 // update if block was moved
                 g->game_board[i][j].moved_in_prev_iteration = false;
             }
+
+            else if (condition && i+1 >= game->bottom_height)
+            {
+                falling_to_fixed();
+                game->need_new_piece = true;
+                return;
+            }
         }
     }
 }
@@ -184,7 +191,7 @@ void game_init(Game* g, int rows, int cols)
     g->rows = rows;
     g->cols = cols;
     g->running = true;
-    g->bottom_height = BOARD_HEIGHT - 1;
+    g->bottom_height = BOARD_HEIGHT - 2;
     g->need_new_piece = true;               // start with a new falling piece
 
     //alloc_game_board();
@@ -378,5 +385,17 @@ void piece_counter_increase()
 
 void falling_to_fixed()
 {
+    for (int i=0; i<game->rows;i++)
+    {
+        for (int j=0; j<game->cols;j++)
+        {
+            bool condition = game->game_board[i][j].value == CELL &&
+                    game->game_board[i][j].falling_piece;
 
+            if (condition)
+            {
+                set_block(i, j, CELL, false, false);
+            }
+        }
+    }
 }
