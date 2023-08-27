@@ -421,10 +421,11 @@ bool can_piece_move(direction dir)
 
                 bool empty_block = is_empty_block(new_i, new_j);
 
-                std::cout<<"valid block: " << valid_block << ", empty block: "<<empty_block<<"\n";
+                //std::cout<<"valid block: " << valid_block << ", empty block: "<<empty_block<<"\n";
 
                 // check if the new position is valid and not colliding with other pieces
-                if (!is_valid_block(new_i, new_j) || !is_empty_block(new_i, new_j)) {
+                if (!is_valid_block(new_i, new_j) )//|| !is_empty_block(new_i, new_j))
+                {
                     return false; // Collision detected
                 }
             }
