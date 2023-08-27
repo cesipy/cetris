@@ -1,6 +1,5 @@
 #include <ncurses.h>
 #include "main.h"
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
@@ -30,7 +29,6 @@ int main (int argc, char* argv[])
 
     initscr();
     init_colors();
-    resizeterm(BOARD_HEIGHT, BOARD_WIDTH);
     noecho();
     resize_term(BOARD_HEIGHT,  BOARD_WIDTH);
     timeout(0);
@@ -114,8 +112,10 @@ int hit_bottom()
 void init_colors()
 {
     start_color();
-    init_pair(1, COLOR_RED, COLOR_BLUE); // Example color pair
-    init_pair(2, COLOR_BLUE, COLOR_RED);
+    for (int i = 1; i < 8; i++) 
+    {
+        init_pair(i, i, 0);
+    }
     // Define other color pairs
 }
 
@@ -270,9 +270,6 @@ void insert_falling_piece(type type, Game* g)
 
 void move_piece(direction dir) {
     bool can_move = can_piece_move(dir);
-
-    if (!can_move) { printf("ey"); return; }
-    printf("reach");
 
     // traverse the game board in the direction based on the dir parameter
     if (dir == right)

@@ -10,3 +10,4 @@
 - [ ] rotation
 - [ ] press down key to immediately move piece down(multiple iterations of gravity)
 - [ ] switch the type of falling pieces randomly
+- [ ] add color to pieces. each piece stores color in game_board
