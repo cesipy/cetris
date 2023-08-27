@@ -40,6 +40,7 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
 
+    example_fill_board(game);
     main_loop();
 
     // free allocated objects
@@ -152,6 +153,14 @@ void display_board(Game* g)
 
 void gravity(Game* g)
 {
+    // check if the blocks below are free
+    bool can_move_down = can_piece_move(down);
+    if (!can_move_down)
+    {
+        falling_to_fixed();
+        game->need_new_piece = true;
+        return;
+    }
     for (int i=g->rows-1; i > 0; i--)
     {
         for (int j= g->cols-1; j > 0; j--)
@@ -164,24 +173,11 @@ void gravity(Game* g)
 
             if(condition && i < game->bottom_height)
             {
-                // check if the blocks below are free
-                bool can_move_down = can_piece_move(down);
-                std::cout<<"can move down: "<<can_move_down;
-                if (can_move_down)
-                {
-                    // update position of the falling piece on the board
-                    set_block(i, j, 0, false, false );
+                // update position of the falling piece on the board
+                set_block(i, j, 0, false, false );
 
-                    // update new position and set as falling piece
-                    set_block(i+1, j, 1, true, true);
-                }
-                else
-                {
-                    falling_to_fixed();
-                    game->need_new_piece = true;
-                    return;
-                }
-
+                // update new position and set as falling piece
+                set_block(i+1, j, 1, true, true);
             }
 
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
@@ -217,15 +213,8 @@ void game_init(Game* g, int rows, int cols)
         for (int j=0; j < g->cols;j++)
         {
             // fill game board with empty cells at start -> '0' is emtpy
-            //g->game_board[i][j].value = EMPTY_CELL;
 
             set_block(i, j, EMPTY_CELL, false, false);
-
-            // example init for fixed blocks
-            if(i == 20)
-            {
-                set_block(i, j, CELL, false, false);
-            }
         }
     }
 }
@@ -240,10 +229,9 @@ void example_fill_board(Game* g)
     {
         for (int j=0; j< cols; j++)
         {
-            if (i == 6 && j < BOARD_WIDTH -1 && j >= 1)
+            if (i == 13 && j < BOARD_EDGE_RIGHT  && j >= 0)
             {
-                g->game_board[i][j].value = CELL;
-                g->game_board[i][j].falling_piece = true;
+                set_block(i, j, CELL, false, false);
             }
         }
     }
