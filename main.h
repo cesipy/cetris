@@ -70,6 +70,19 @@ int hit_bottom();
 void init_colors();
 void game_init(Game*, int rows, int cols);
 void display_board(Game* g);
+
+/**
+ * Apply gravity to the falling piece on the game board.
+ *
+ * This function checks if the blocks below the falling piece are free. If they are,
+ * it moves the falling piece down one row. If the falling piece reaches the bottom
+ * or encounters obstacles below, it sets the piece as a fixed piece on the board
+ * and triggers the need for a new piece.
+ *
+ * @param g A pointer to the Game struct containing game information.
+ * @return 1 if the falling piece has reached the bottom and needs a new piece, 0 otherwise.
+ * Is used for skip_gravity function
+ */
 int gravity(Game* g);
 void example_fill_board(Game* g);
 
@@ -77,16 +90,25 @@ void example_fill_board(Game* g);
  * move a piece in direction 'dir'.
  */
 void move_piece(direction);
-bool is_valid_block(int rows, int cols);
 
 /**
- * sets a block in a given row and column to a specified value with several attributes
+ * Check if a block at the specified row and column is within the valid game board boundaries.
  *
- * @param row
- * @param col
- * @param value
- * @param is_falling
- * @param moved_in_prev_iteration
+ * @param row The row of the block to check.
+ * @param col The column of the block to check.
+ * @return true if the block is within the valid game board boundaries, false otherwise.
+ */
+bool is_valid_block(int rows, int cols);
+
+
+/**
+ * Set a block in a given row and column to a specified value with several attributes.
+ *
+ * @param row The row in which to set the block.
+ * @param col The column in which to set the block.
+ * @param value The value to set for the block (e.g., EMPTY_CELL or CELL).
+ * @param is_falling Whether the block is part of a falling piece.
+ * @param moved_in_prev_iteration Whether the block was moved in the previous iteration.
  */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
 void piece_counter_increase();
