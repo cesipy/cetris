@@ -4,10 +4,6 @@
 #include <unistd.h>
 #include <iostream>
 
-void game_init(Game*, int rows, int cols);
-void display_board(Game* g);
-void gravity(Game* g);
-void example_fill_board(Game* g);
 
 int ch;
 
@@ -81,6 +77,7 @@ void main_loop()
                 // Rotate Tetromino (implement the rotation logic)
                 break;
             case KEY_DOWN:
+                skip_tick_gravity();
                 // Move Tetromino down faster (if desired)
                 break;
             default:
@@ -151,7 +148,7 @@ void display_board(Game* g)
 }
 
 
-void gravity(Game* g)
+int gravity(Game* g)
 {
     // check if the blocks below are free
     bool can_move_down = can_piece_move(down);
@@ -159,7 +156,7 @@ void gravity(Game* g)
     {
         falling_to_fixed();
         game->need_new_piece = true;
-        return;
+        return 1;       // ultimate gravity turn
     }
     for (int i=g->rows-1; i > 0; i--)
     {
@@ -190,10 +187,11 @@ void gravity(Game* g)
             {
                 falling_to_fixed();
                 game->need_new_piece = true;
-                return;
+                return 1;
             }
         }
     }
+    return 0;
 }
 
 
@@ -441,4 +439,14 @@ bool is_empty_block(int row, int col)
         return true;
     }
     return false;
+}
+
+
+void skip_tick_gravity()
+{
+    int status_gravity = gravity(game);
+    while (status_gravity != 1)
+    {
+        status_gravity = gravity(game);
+    }
 }
