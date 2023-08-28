@@ -68,6 +68,10 @@ void insert_falling_piece(type type, Game* g);
 void main_loop();
 int hit_bottom();
 void init_colors();
+void game_init(Game*, int rows, int cols);
+void display_board(Game* g);
+int gravity(Game* g);
+void example_fill_board(Game* g);
 
 /**
  * move a piece in direction 'dir'.
@@ -90,6 +94,8 @@ void falling_to_fixed();
 bool can_piece_move(direction);
 bool can_piece_rotate();
 bool is_empty_block(int, int);
+void skip_tick_gravity();
+
 
 void alloc_game_board();
 void dealloc_game_board();
