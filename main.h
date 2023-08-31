@@ -25,6 +25,17 @@ enum direction {
     left, right, down
 };
 
+/**
+ * stores position with (x, y)
+ *
+ * @param x x coordinate
+ * @param y y coordinate
+ */
+typedef struct {
+    int x;
+    int y;
+}Position;
+
 
 typedef struct {
     int value;
@@ -46,6 +57,7 @@ typedef struct {
     char bottom_height;         // number of bottom row
     bool need_new_piece;        // is a piece still falling, or is a new one needed
     int highest_fixed_block;    // height of the highest current block. (to check for game-over)
+    Position middle_coordinate; // store the middle point of current ffalling piece (to rotate)
     //further add
 }Game;
 
@@ -117,12 +129,14 @@ void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_
 void piece_counter_increase(void);
 void falling_to_fixed(void);
 bool can_piece_move(direction);
-bool can_piece_rotate(void);
 bool is_empty_block(int, int);
 void skip_tick_gravity(void);
 
 void check_game_state(void);
 int generate_random_number(int min, int max);
+
+Position block_position_after_rotation(int row, int col, direction dir, int delta_middle_point);
+bool can_piece_rotate(void);
 
 
 void alloc_game_board();
