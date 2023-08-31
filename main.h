@@ -31,6 +31,7 @@ typedef struct {
     bool falling_piece;
     bool fixed_piece;
     bool moved_in_prev_iteration;
+    short color; // color from 0 to 7
 }Block;
 
 
@@ -103,15 +104,16 @@ bool is_valid_block(int rows, int cols);
 
 
 /**
- * Set a block in a given row and column to a specified value with several attributes.
+ * @brief Set a block in a given row and column to a specified value with several attributes.
  *
  * @param row The row in which to set the block.
  * @param col The column in which to set the block.
  * @param value The value to set for the block (e.g., EMPTY_CELL or CELL).
  * @param is_falling Whether the block is part of a falling piece.
  * @param moved_in_prev_iteration Whether the block was moved in the previous iteration.
+ * @param color Value from 0 to 7, indicates the color. 8 means field is free.
  */
-void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color);
 void piece_counter_increase(void);
 void falling_to_fixed(void);
 bool can_piece_move(direction);
@@ -120,6 +122,7 @@ bool is_empty_block(int, int);
 void skip_tick_gravity(void);
 
 void check_game_state(void);
+int generate_random_number(int min, int max);
 
 
 void alloc_game_board();
