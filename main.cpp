@@ -1,6 +1,5 @@
 #include <ncurses.h>
 #include "main.h"
-#include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
 
@@ -96,6 +95,8 @@ void main_loop()
         usleep(SLEEP_TIME);     // sleep for a bit
 
         tick++;
+
+        check_game_state();
     }
 }
 
@@ -197,13 +198,13 @@ int gravity(Game* g)
 
 void game_init(Game* g, int rows, int cols)
 {
-    g->rows = rows;
-    g->cols = cols;
-    g->running = true;
-    g->bottom_height = BOARD_HEIGHT - 2;
-    g->need_new_piece = true;               // start with a new falling piece
+    g->rows                = rows;
+    g->cols                = cols;
+    g->running             = true;
+    g->bottom_height       = BOARD_HEIGHT - 2;
+    g->need_new_piece      = true;               // start with a new falling piece
+    g->highest_fixed_block = 0;
 
-    //alloc_game_board();
     // further implementation
 
     for (int i=0; i<g->rows;i++)
@@ -378,7 +379,17 @@ void falling_to_fixed()
 
             if (condition)
             {
+                // set to falling piece
                 set_block(i, j, CELL, false, false);
+                int height = BOARD_HEIGHT - i;
+
+                bool condition_height = height > game->highest_fixed_block;
+
+                if (condition_height)
+                {
+                    // set new highest current block
+                    game->highest_fixed_block = height;
+                }
             }
         }
     }
@@ -417,8 +428,6 @@ bool can_piece_move(direction dir)
 
                 bool empty_block = is_empty_block(new_i, new_j);
 
-                //std::cout<<"valid block: " << valid_block << ", empty block: "<<empty_block<<"\n";
-
                 // check if the new position is valid and not colliding with other pieces
                 if (!is_valid_block(new_i, new_j) || !is_empty_block(new_i, new_j))
                 {
@@ -448,5 +457,16 @@ void skip_tick_gravity()
     while (status_gravity != 1)
     {
         status_gravity = gravity(game);
+    }
+}
+
+
+// check for highest current block
+void check_game_state(void)
+{
+    // check if highest current block reaches top -> game-over
+    if (game->highest_fixed_block >= BOARD_HEIGHT-1)
+    {
+        game->running = false;
     }
 }
