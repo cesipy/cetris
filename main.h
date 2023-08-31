@@ -42,8 +42,9 @@ typedef struct {
     Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
     WINDOW* win;
     bool running;
-    char bottom_height;     // number of bottom row
-    bool need_new_piece;    // is a piece still falling, or is a new one needed
+    char bottom_height;         // number of bottom row
+    bool need_new_piece;        // is a piece still falling, or is a new one needed
+    int highest_fixed_block;    // height of the highest current block. (to check for game-over)
     //further add
 }Game;
 
@@ -111,12 +112,14 @@ bool is_valid_block(int rows, int cols);
  * @param moved_in_prev_iteration Whether the block was moved in the previous iteration.
  */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration);
-void piece_counter_increase();
-void falling_to_fixed();
+void piece_counter_increase(void);
+void falling_to_fixed(void);
 bool can_piece_move(direction);
-bool can_piece_rotate();
+bool can_piece_rotate(void);
 bool is_empty_block(int, int);
-void skip_tick_gravity();
+void skip_tick_gravity(void);
+
+void check_game_state(void);
 
 
 void alloc_game_board();
