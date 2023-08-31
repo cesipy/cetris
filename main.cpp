@@ -29,6 +29,7 @@ int main (int argc, char* argv[])
     timeout(0);
     curs_set(0);
     keypad(stdscr, TRUE);       // allow for arrow keys
+    srand(time(0));
 
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
@@ -171,11 +172,15 @@ int gravity(Game* g)
 
             if(condition && i < game->bottom_height)
             {
+
+                // save the color
+                short color = game->game_board[i][j].color;
+
                 // update position of the falling piece on the board
-                set_block(i, j, 0, false, false );
+                set_block(i, j, EMPTY_CELL, false, false, 8 );
 
                 // update new position and set as falling piece
-                set_block(i+1, j, 1, true, true);
+                set_block(i+1, j, CELL, true, true, color);
             }
 
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
@@ -213,7 +218,7 @@ void game_init(Game* g, int rows, int cols)
         {
             // fill game board with empty cells at start -> '0' is emtpy
 
-            set_block(i, j, EMPTY_CELL, false, false);
+            set_block(i, j, EMPTY_CELL, false, false, 8);
         }
     }
 }
@@ -230,7 +235,7 @@ void example_fill_board(Game* g)
         {
             if (i == 13 && j < BOARD_EDGE_RIGHT  && j >= 0)
             {
-                set_block(i, j, CELL, false, false);
+                set_block(i, j, CELL, false, false, 4);
             }
         }
     }
@@ -240,29 +245,30 @@ void example_fill_board(Game* g)
 void insert_falling_piece(type type, Game* g)
 {
     int mid = 8;
+    short color = generate_random_number(0, 7);
 
     if (type == L)
     {
-        set_block(1, mid - 1, CELL, true, false);
-        set_block(1, mid    , CELL, true, false);
-        set_block(1, mid + 1, CELL, true, false);
-        set_block(2, mid + 1, CELL, true, false);
+        set_block(1, mid - 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid + 1, CELL, true, false, color);
     }
 
     else if (type == I)
     {
-        set_block(1, mid - 1, CELL, true, false);
-        set_block(1, mid    , CELL, true, false);
-        set_block(1, mid + 1, CELL, true, false);
-        set_block(1, mid + 2, CELL, true, false);
+        set_block(1, mid - 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(1, mid + 2, CELL, true, false, color);
     }
 
     else if (type == J)
     {
-        set_block(1, mid - 1, CELL, true, false);
-        set_block(1, mid    , CELL, true, false);
-        set_block(1, mid + 1, CELL, true, false);
-        set_block(2, mid - 1, CELL, true, false);
+        set_block(1, mid - 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid - 1, CELL, true, false, color);
     }
 }
 
@@ -287,11 +293,14 @@ void move_piece(direction dir) {
 
                     if (is_valid_block(i, new_j) )
                     {
+                        // save the color
+                        short color = game->game_board[i][j].color;
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false);
+                        set_block(i, j, EMPTY_CELL, false, false, 8);
 
                         // set new block at the updated position
-                        set_block(i, new_j, CELL, true, false);
+                        set_block(i, new_j, CELL, true, false, color);
+
                     }
                 }
             }
@@ -315,11 +324,15 @@ void move_piece(direction dir) {
 
                     if (is_valid_block(i, new_j))
                     {
+
+                        // save the color
+                        short color = game->game_board[i][j].color;
+
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false);
+                        set_block(i, j, EMPTY_CELL, false, false, 8);
 
                         // set new block at the updated position
-                        set_block(i, new_j, CELL, true, false);
+                        set_block(i, new_j, CELL, true, false, color);
                     }
                 }
             }
@@ -342,13 +355,14 @@ bool is_valid_block(int rows, int cols)
 }
 
 
-void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration)
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color)
 {
-    game->game_board[row][col].value         = value;
+    game->game_board[row][col].value                        = value;
+    game->game_board[row][col].color                        = color;
     if (value == EMPTY_CELL)
     {
-        game->game_board[row][col].falling_piece = false;
-        game->game_board[row][col].fixed_piece   =  false;
+        game->game_board[row][col].falling_piece            = false;
+        game->game_board[row][col].fixed_piece              =  false;
         game->game_board[row][col].moved_in_prev_iteration  =  false;
     }
 
@@ -379,8 +393,11 @@ void falling_to_fixed()
 
             if (condition)
             {
+                // save the color
+                short color = game->game_board[i][j].color;
+
                 // set to falling piece
-                set_block(i, j, CELL, false, false);
+                set_block(i, j, CELL, false, false, color);
                 int height = BOARD_HEIGHT - i;
 
                 bool condition_height = height > game->highest_fixed_block;
@@ -469,4 +486,10 @@ void check_game_state(void)
     {
         game->running = false;
     }
+}
+
+int generate_random_number(int min, int max)
+{
+    int random_number = rand() % (max+1);
+    return random_number;
 }
