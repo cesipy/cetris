@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <iostream>
 
-
 int ch;
 
 WINDOW* board, * falling, *hold, *score;
@@ -52,7 +51,8 @@ void main_loop()
     {
         if (game->need_new_piece)
         {
-            insert_falling_piece(I, game);
+            int random_piece = generate_random_number(0, 2);
+            insert_falling_piece(static_cast<type>(random_piece), game);
             piece_counter_increase();
 
             game->need_new_piece = false;
@@ -131,13 +131,7 @@ void display_board(Game* g)
         {
             if (g->game_board[i][j].value != EMPTY_CELL)
             {
-                if (g->game_board[i][j].falling_piece)
-                { ADD_BLOCK(win, 1); }
-
-                else
-                {
-                    ADD_BLOCK(win, 2);
-                }
+                ADD_BLOCK(win, game->game_board[i][j].color);
             }
 
             else
