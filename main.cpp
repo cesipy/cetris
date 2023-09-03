@@ -75,7 +75,8 @@ void main_loop()
                 move_piece(right);
                 break;
             case KEY_UP:
-                // Rotate Tetromino (implement the rotation logic)
+                // rotate
+                can_piece_rotate(left);
                 break;
             case KEY_DOWN:
                 skip_tick_gravity();
@@ -90,7 +91,7 @@ void main_loop()
         // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
-            std::cout<<"row: " <<game->middle_coordinate.row<<",col: " << game->middle_coordinate.col<<"\n";
+            // std::cout<<"row: " <<game->middle_coordinate.row<<",col: " << game->middle_coordinate.col<<"\n";
         }
 
         doupdate();             // update all windows
@@ -580,4 +581,27 @@ Position block_position_after_rotation(int row, int col, direction dir)
         }
     }
     return pos;
+}
+
+bool can_piece_rotate(direction dir)
+{
+    for (int i=0; i<game->rows;i++)
+    {
+        for(int j=0; j<game->cols; j++)
+        {
+            bool condition =
+                    game->game_board[i][j].falling_piece && game->game_board[i][j].value == CELL;
+
+            if (condition)
+            {
+                Position pos = block_position_after_rotation(i, j, dir);
+
+                // is position valid?
+                bool valid_position = is_valid_block(pos.row, pos.col) && is_empty_block(pos.row, pos.col);
+                if (!valid_position) { std::cout<<"cant rotate"; return false; }
+            }
+        }
+    }
+    std::cout << "can rotate!";
+    return true;
 }
