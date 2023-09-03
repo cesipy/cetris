@@ -137,6 +137,7 @@ int generate_random_number(int min, int max);
 
 Position block_position_after_rotation(int row, int col, direction dir);
 bool can_piece_rotate(direction dir);
+void rotate_piece();
 
 
 void alloc_game_board();

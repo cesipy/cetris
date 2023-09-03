@@ -598,10 +598,11 @@ bool can_piece_rotate(direction dir)
 
                 // is position valid?
                 bool valid_position = is_valid_block(pos.row, pos.col) && is_empty_block(pos.row, pos.col);
-                if (!valid_position) { std::cout<<"cant rotate"; return false; }
+                if (!valid_position) { //std::cout<<"cant rotate";
+                    return false; }
             }
         }
     }
-    std::cout << "can rotate!";
+    //std::cout << "can rotate!";
     return true;
 }
