@@ -33,7 +33,7 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
 
-    example_fill_board(game);
+    // example_fill_board(game);
     main_loop();
 
     // free allocated objects
@@ -89,6 +89,7 @@ void main_loop()
         // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
+            std::cout<<"x: " <<game->middle_coordinate.x<<", " << game->middle_coordinate.y<<"\n";
         }
 
         doupdate();             // update all windows
@@ -98,6 +99,7 @@ void main_loop()
         tick++;
 
         check_game_state();
+
     }
 }
 
@@ -154,6 +156,8 @@ int gravity(Game* g)
         game->need_new_piece = true;
         return 1;       // ultimate gravity turn
     }
+
+    // piece is moved down
     for (int i=g->rows-1; i > 0; i--)
     {
         for (int j= g->cols-1; j > 0; j--)
@@ -187,22 +191,29 @@ int gravity(Game* g)
             {
                 falling_to_fixed();
                 game->need_new_piece = true;
-                return 1;
+                return 1;       // return needed for skip_tick_gravity if down arrow is pressed
             }
         }
     }
-    return 0;
+    // update position of middle block
+    game->middle_coordinate.y++;
+
+    return 0;                    // return needed for skip_tick_gravity if down arrow is pressed
 }
 
 
 void game_init(Game* g, int rows, int cols)
 {
+    // Position for middle coordinate
+    Position position = {.x=0, .y=0};
+
     g->rows                = rows;
     g->cols                = cols;
     g->running             = true;
     g->bottom_height       = BOARD_HEIGHT - 2;
     g->need_new_piece      = true;               // start with a new falling piece
     g->highest_fixed_block = 0;
+    g->middle_coordinate   = position;
 
     // further implementation
 
@@ -240,13 +251,18 @@ void insert_falling_piece(type type, Game* g)
 {
     int mid = 8;
     short color = generate_random_number(0, 7);
+    Position pos;
 
-    if (type == L)
+    if (type == J)
     {
         set_block(1, mid - 1, CELL, true, false, color);
         set_block(1, mid    , CELL, true, false, color);
         set_block(1, mid + 1, CELL, true, false, color);
         set_block(2, mid + 1, CELL, true, false, color);
+
+        // assign middle position
+        pos.x = 1;
+        pos.y = mid + 1;
     }
 
     else if (type == I)
@@ -255,20 +271,35 @@ void insert_falling_piece(type type, Game* g)
         set_block(1, mid    , CELL, true, false, color);
         set_block(1, mid + 1, CELL, true, false, color);
         set_block(1, mid + 2, CELL, true, false, color);
+
+        // assign middle position
+        pos.x = 1;
+        pos.y = mid + 1;
     }
 
-    else if (type == J)
+    else if (type == L)
     {
         set_block(1, mid - 1, CELL, true, false, color);
         set_block(1, mid    , CELL, true, false, color);
         set_block(1, mid + 1, CELL, true, false, color);
         set_block(2, mid - 1, CELL, true, false, color);
+
+        // assign middle position
+        pos.x = 1;
+        pos.y = mid - 1;
     }
+
+    game->middle_coordinate = pos;
 }
 
 
 void move_piece(direction dir) {
     bool can_move = can_piece_move(dir);
+
+    if (!can_move)
+    {
+        return;
+    }
 
     // traverse the game board in the direction based on the dir parameter
     if (dir == right)
@@ -299,6 +330,8 @@ void move_piece(direction dir) {
                 }
             }
         }
+        // update position of middle coordinate to the right
+        game->middle_coordinate.x++;
     }
 
     // if dir == left, traverse the list the way around
@@ -331,6 +364,8 @@ void move_piece(direction dir) {
                 }
             }
         }
+        // update position of middle coordinate to the left
+        game->middle_coordinate.x--;
     }
 
 }
