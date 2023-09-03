@@ -32,8 +32,8 @@ enum direction {
  * @param y y coordinate
  */
 typedef struct {
-    int x;
-    int y;
+    int row;
+    int col;
 }Position;
 
 
@@ -135,7 +135,7 @@ void skip_tick_gravity(void);
 void check_game_state(void);
 int generate_random_number(int min, int max);
 
-Position block_position_after_rotation(int row, int col, direction dir, int delta_middle_point);
+Position block_position_after_rotation(int row, int col, direction dir);
 bool can_piece_rotate(void);
 
 

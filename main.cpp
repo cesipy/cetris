@@ -49,6 +49,7 @@ void main_loop()
 
     while (game->running)
     {
+
         if (game->need_new_piece)
         {
             int random_piece = generate_random_number(0, 2);
@@ -89,7 +90,7 @@ void main_loop()
         // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
-            std::cout<<"x: " <<game->middle_coordinate.x<<", " << game->middle_coordinate.y<<"\n";
+            std::cout<<"row: " <<game->middle_coordinate.row<<",col: " << game->middle_coordinate.col<<"\n";
         }
 
         doupdate();             // update all windows
@@ -124,7 +125,6 @@ void init_colors()
 void display_board(Game* g)
 {
     WINDOW* win = g->win;
-    box(win, 0, 0);
 
     for(int i=0; i < g->rows; i++)
     {
@@ -142,6 +142,7 @@ void display_board(Game* g)
             }
         }
     }
+    box(win, 0, 0);
     wnoutrefresh(win);
 }
 
@@ -196,7 +197,7 @@ int gravity(Game* g)
         }
     }
     // update position of middle block
-    game->middle_coordinate.y++;
+    game->middle_coordinate.row++;
 
     return 0;                    // return needed for skip_tick_gravity if down arrow is pressed
 }
@@ -205,7 +206,7 @@ int gravity(Game* g)
 void game_init(Game* g, int rows, int cols)
 {
     // Position for middle coordinate
-    Position position = {.x=0, .y=0};
+    Position position = {.row=0, .col=0};
 
     g->rows                = rows;
     g->cols                = cols;
@@ -261,8 +262,8 @@ void insert_falling_piece(type type, Game* g)
         set_block(2, mid + 1, CELL, true, false, color);
 
         // assign middle position
-        pos.x = 1;
-        pos.y = mid + 1;
+        pos.row = 1;
+        pos.col = mid + 1;
     }
 
     else if (type == I)
@@ -273,8 +274,8 @@ void insert_falling_piece(type type, Game* g)
         set_block(1, mid + 2, CELL, true, false, color);
 
         // assign middle position
-        pos.x = 1;
-        pos.y = mid + 1;
+        pos.row = 1;
+        pos.col = mid + 1;
     }
 
     else if (type == L)
@@ -285,8 +286,8 @@ void insert_falling_piece(type type, Game* g)
         set_block(2, mid - 1, CELL, true, false, color);
 
         // assign middle position
-        pos.x = 1;
-        pos.y = mid - 1;
+        pos.row = 1;
+        pos.col = mid - 1;
     }
 
     game->middle_coordinate = pos;
@@ -331,7 +332,7 @@ void move_piece(direction dir) {
             }
         }
         // update position of middle coordinate to the right
-        game->middle_coordinate.x++;
+        game->middle_coordinate.col++;
     }
 
     // if dir == left, traverse the list the way around
@@ -365,7 +366,7 @@ void move_piece(direction dir) {
             }
         }
         // update position of middle coordinate to the left
-        game->middle_coordinate.x--;
+        game->middle_coordinate.col--;
     }
 
 }
@@ -521,4 +522,62 @@ int generate_random_number(int min, int max)
 {
     int random_number = rand() % (max+1);
     return random_number;
+}
+
+
+Position block_position_after_rotation(int row, int col, direction dir)
+{
+    Position pos;
+
+    Position middle_position = game->middle_coordinate;
+    int delta_row, delta_col;
+
+    delta_row = row - middle_position.row;
+    delta_col = col - middle_position.row;
+
+    // turn clockwise
+    if (dir == right)
+    {
+        // block is to the right/right of middle
+        if (delta_col != 0 && delta_row == 0)
+        {
+            pos.row = row + delta_col;
+            pos.col = middle_position.col;
+        }
+        // block is above/under middle
+        else if (delta_row != 0 && delta_col == 0)
+        {
+            pos.col = col - delta_row;
+            pos.row = middle_position.row;
+        }
+        // block is middle
+        else
+        {
+            pos.row = middle_position.row;
+            pos.col = middle_position.col;
+        }
+    }
+
+    else if (dir == left)
+    {
+        // block is to the left/right of middle
+        if (delta_col != 0 && delta_row == 0)
+        {
+            pos.row = row - delta_col;
+            pos.col = middle_position.col;
+        }
+        // block is above/under middle
+        else if (delta_row != 0 && delta_col == 0)
+        {
+            pos.col = col - delta_row;
+            pos.row = middle_position.row;
+        }
+        // block is middle
+        else
+        {
+            pos.row = middle_position.row;
+            pos.col = middle_position.col;
+        }
+    }
+    return pos;
 }
