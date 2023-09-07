@@ -127,6 +127,9 @@ void display_board(Game* g)
 {
     WINDOW* win = g->win;
 
+    //temp for debugging
+    Position middle = game->middle_coordinate;
+
     for(int i=0; i < g->rows; i++)
     {
         wmove(win, i +1, 1);
@@ -134,7 +137,17 @@ void display_board(Game* g)
         {
             if (g->game_board[i][j].value != EMPTY_CELL)
             {
-                ADD_BLOCK(win, game->game_board[i][j].color);
+
+
+                //debugging: show middle coordinate
+                if (i == middle.row && j == middle.col)
+                {
+                    ADD_BLOCK(win, 1);
+                }
+                else
+                {
+                    ADD_BLOCK(win, game->game_board[i][j].color);
+                }
             }
 
             else
@@ -159,6 +172,10 @@ int gravity(Game* g)
         return 1;       // ultimate gravity turn
     }
 
+    // save middle point
+    int middle_row = game->middle_coordinate.row;
+    int middle_col = game->middle_coordinate.col;
+
     // piece is moved down
     for (int i=g->rows-1; i > 0; i--)
     {
@@ -181,6 +198,11 @@ int gravity(Game* g)
 
                 // update new position and set as falling piece
                 set_block(i+1, j, CELL, true, true, color);
+
+                if (i == middle_row && j == middle_col)
+                {
+                    game->middle_coordinate.row++;
+                }
             }
 
             else if (g->game_board[i][j].value == 1 && g->game_board[i][j].moved_in_prev_iteration)
@@ -197,8 +219,7 @@ int gravity(Game* g)
             }
         }
     }
-    // update position of middle block
-    game->middle_coordinate.row++;
+
 
     return 0;                    // return needed for skip_tick_gravity if down arrow is pressed
 }
@@ -605,4 +626,11 @@ bool can_piece_rotate(direction dir)
     }
     //std::cout << "can rotate!";
     return true;
+}
+
+
+// rotate the piece
+void rotate_piece()
+{
+    return;
 }
