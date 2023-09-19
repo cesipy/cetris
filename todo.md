@@ -14,7 +14,7 @@
 - [ ] switch the type of falling pieces randomly
 - [ ] add color to pieces. each piece stores color in game_board
 - [ ] when game-over -> screen showing  status 
-
+- [ ] check if rotation is allowed
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 

@@ -2,14 +2,14 @@
 #define MAIN_H
 
 #include <ncurses.h>
-#define GRAVITY_TICKS 35
+#define GRAVITY_TICKS 3500
 #define BOARD_WIDTH  30
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
 #define AMOUNT_OF_PIECES 2
 #define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
-#define DIRECTION right
+#define DIRECTION left
 
 #define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
@@ -43,6 +43,7 @@ typedef struct {
     bool falling_piece;
     bool fixed_piece;
     bool moved_in_prev_iteration;
+    bool rotated_in_prev_iteration;
     short color; // color from 0 to 7
 }Block;
 

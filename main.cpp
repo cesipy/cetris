@@ -8,8 +8,7 @@ int ch;
 WINDOW* board, * falling, *hold, *score;
 Game* game;
 int piece_counter = 0;
-
-#define SLEEP_TIME 10000
+#define SLEEP_TIME 100
 
 /*  ------------------------------  */
 
@@ -91,15 +90,11 @@ void main_loop()
         // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
             gravity(game);
-            // std::cout<<"row: " <<game->middle_coordinate.row<<",col: " << game->middle_coordinate.col<<"\n";
         }
 
         doupdate();             // update all windows
-
         usleep(SLEEP_TIME);     // sleep for a bit
-
         tick++;
-
         check_game_state();
 
     }
@@ -127,7 +122,7 @@ void display_board(Game* g)
 {
     WINDOW* win = g->win;
 
-    //temp for debugging
+    // temp for debugging
     Position middle = game->middle_coordinate;
 
     for(int i=0; i < g->rows; i++)
@@ -139,7 +134,7 @@ void display_board(Game* g)
             {
 
 
-                //debugging: show middle coordinate
+                // debugging: show middle coordinate
                 if (i == middle.row && j == middle.col)
                 {
                     ADD_BLOCK(win, 1);
@@ -247,6 +242,8 @@ void game_init(Game* g, int rows, int cols)
             // fill game board with empty cells at start -> '0' is emtpy
 
             set_block(i, j, EMPTY_CELL, false, false, 8);
+
+            game->game_board[i][j].rotated_in_prev_iteration = false;
         }
     }
 }
@@ -611,6 +608,7 @@ void rotate_piece(direction dir)
         for(int j=0; j<game->cols; j++)
         {
             temp_board[i][j] = game->game_board[i][j];
+            temp_board[i][j].rotated_in_prev_iteration = false;
         }
     }
 
@@ -626,21 +624,24 @@ void rotate_piece(direction dir)
 
             if (condition)
             {
+                // get position of each block after iteration
                 Position rotated_position = block_position_after_rotation(i, j, dir);
-                //Position rotated_position = rotate_block_position(i, j, middle_pos);
 
+                /*
                 bool is_valid = is_valid_block(rotated_position.row, rotated_position.col)
                         && is_empty_block(rotated_position.row, rotated_position.col);
+                */
 
-                if (is_valid)
+                // copy block from prev position
+                temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
+                temp_board[rotated_position.row][rotated_position.col].rotated_in_prev_iteration = true;
+
+                if (rotated_position.row != i && rotated_position.col != j && !temp_board[i][j].rotated_in_prev_iteration)
                 {
-                    /// copy block from prev position
-                    temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
-
-                    temp_board[i][j].value = EMPTY_CELL;
-                    temp_board[i][j].falling_piece = false;
-                    temp_board[i][j].color = 8;
-                    temp_board[i][j].fixed_piece = false;
+                        temp_board[i][j].value = EMPTY_CELL;
+                        temp_board[i][j].falling_piece = false;
+                        temp_board[i][j].color = 8;
+                        temp_board[i][j].fixed_piece = false;
                 }
             }
         }
