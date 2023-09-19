@@ -140,6 +140,8 @@ Position block_position_after_rotation(int row, int col, direction dir);
 bool can_piece_rotate(direction dir);
 void rotate_piece(direction dir);
 
+Position rotate_block_position(int row, int col, const Position& pivot);
+
 
 void alloc_game_board();
 void dealloc_game_board();

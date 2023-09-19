@@ -552,50 +552,28 @@ Position block_position_after_rotation(int row, int col, direction dir)
     Position pos;
 
     Position middle_position = game->middle_coordinate;
-    int delta_row, delta_col;
 
-    delta_row = row - middle_position.row;
-    delta_col = col - middle_position.row;
+    // Calculate the delta from the middle coordinate
+    int delta_row = row - middle_position.row;
+    int delta_col = col - middle_position.col;
 
-    std::cout<<"row: " << delta_row << "col: " << delta_col;
-
-    // turn clockwise
+    // Apply rotation based on direction
     if (dir == right)
     {
-        // block is to the right/right of middle
-        if (delta_col != 0 && delta_row == 0)
-        {
-            pos.row = row + delta_col;
-            pos.col = middle_position.col;
-        }
-        // block is above/under middle
-        else if (delta_row != 0 && delta_col == 0)
-        {
-            pos.col = col - delta_row;
-            pos.row = middle_position.row;
-        }
-        // block is middle
-
+        // Rotate 90 degrees clockwise
+        pos.row = middle_position.row - delta_col;
+        pos.col = middle_position.col + delta_row;
     }
     else if (dir == left)
     {
-        // block is to the left/right of middle
-        if (delta_col != 0 && delta_row == 0)
-        {
-            pos.row = row - delta_col;
-            pos.col = middle_position.col;
-        }
-        // block is above/under middle
-        else if (delta_row != 0 && delta_col == 0)
-        {
-            pos.col = col - delta_row;
-            pos.row = middle_position.row;
-        }
-        // block is middle
-
+        // Rotate 90 degrees counterclockwise
+        pos.row = middle_position.row + delta_col;
+        pos.col = middle_position.col - delta_row;
     }
+
     return pos;
 }
+
 
 bool can_piece_rotate(direction dir)
 {
@@ -619,7 +597,6 @@ bool can_piece_rotate(direction dir)
             }
         }
     }
-    //std::cout << "can rotate!";
     return true;
 }
 
@@ -627,35 +604,55 @@ bool can_piece_rotate(direction dir)
 // rotate the piece
 void rotate_piece(direction dir)
 {
-    bool can_rotate = can_piece_rotate(DIRECTION);
-
-    Position new_position;
-
-    if (can_rotate)
+    // temporary copy of game board
+    Block temp_board[BOARD_HEIGHT][BOARD_WIDTH];
+    for(int i=0; i<game->rows; i++)
     {
-        for (int i=0; i<game->rows; i++)
+        for(int j=0; j<game->cols; j++)
         {
-            for (int j=0; j<game->cols; j++)
+            temp_board[i][j] = game->game_board[i][j];
+        }
+    }
+
+    Position middle_pos = game->middle_coordinate;
+
+    // perform rotation on copy
+    for(int i=0; i<game->rows; i++)
+    {
+        for(int j=0; j<game->cols; j++)
+        {
+            bool condition = game->game_board[i][j].value == CELL
+                    && game->game_board[i][j].falling_piece;
+
+            if (condition)
             {
-                bool condition =
-                        game->game_board[i][j].value == CELL &&
-                        game->game_board[i][j].falling_piece
-                        && !game->game_board[i][j].moved_in_prev_iteration;
+                Position rotated_position = block_position_after_rotation(i, j, dir);
+                //Position rotated_position = rotate_block_position(i, j, middle_pos);
 
-                if (condition)
+                bool is_valid = is_valid_block(rotated_position.row, rotated_position.col)
+                        && is_empty_block(rotated_position.row, rotated_position.col);
+
+                if (is_valid)
                 {
-                    short color = game->game_board[i][j].color;
-                    // calculate new position of rotated block
-                    new_position = block_position_after_rotation(i, j, dir);
+                    /// copy block from prev position
+                    temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
 
-                     // delete old block
-                    set_block(i, j, EMPTY_CELL, false, false, 8);
-
-                    // update new position of rotated block
-                    set_block(new_position.row, new_position.col, CELL,
-                              true, true, color);
+                    temp_board[i][j].value = EMPTY_CELL;
+                    temp_board[i][j].falling_piece = false;
+                    temp_board[i][j].color = 8;
+                    temp_board[i][j].fixed_piece = false;
                 }
             }
         }
     }
+
+    // copy from temp board to real game board
+    for(int i=0; i<game->rows; i++)
+    {
+        for(int j=0; j<game->rows; j++)
+        {
+            game->game_board[i][j] = temp_board[i][j];
+        }
+    }
+
 }
