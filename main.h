@@ -9,6 +9,7 @@
 #define CELL 1
 #define AMOUNT_OF_PIECES 2
 #define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
+#define DIRECTION right
 
 #define ADD_BLOCK(w,x) waddch((w),' '|A_REVERSE|COLOR_PAIR(x));     \
                        waddch((w),' '|A_REVERSE|COLOR_PAIR(x))
@@ -137,7 +138,7 @@ int generate_random_number(int min, int max);
 
 Position block_position_after_rotation(int row, int col, direction dir);
 bool can_piece_rotate(direction dir);
-void rotate_piece();
+void rotate_piece(direction dir);
 
 
 void alloc_game_board();

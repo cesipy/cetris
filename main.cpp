@@ -76,7 +76,7 @@ void main_loop()
                 break;
             case KEY_UP:
                 // rotate
-                can_piece_rotate(left);
+                rotate_piece(DIRECTION);
                 break;
             case KEY_DOWN:
                 skip_tick_gravity();
@@ -557,6 +557,8 @@ Position block_position_after_rotation(int row, int col, direction dir)
     delta_row = row - middle_position.row;
     delta_col = col - middle_position.row;
 
+    std::cout<<"row: " << delta_row << "col: " << delta_col;
+
     // turn clockwise
     if (dir == right)
     {
@@ -573,13 +575,8 @@ Position block_position_after_rotation(int row, int col, direction dir)
             pos.row = middle_position.row;
         }
         // block is middle
-        else
-        {
-            pos.row = middle_position.row;
-            pos.col = middle_position.col;
-        }
-    }
 
+    }
     else if (dir == left)
     {
         // block is to the left/right of middle
@@ -595,11 +592,7 @@ Position block_position_after_rotation(int row, int col, direction dir)
             pos.row = middle_position.row;
         }
         // block is middle
-        else
-        {
-            pos.row = middle_position.row;
-            pos.col = middle_position.col;
-        }
+
     }
     return pos;
 }
@@ -619,8 +612,10 @@ bool can_piece_rotate(direction dir)
 
                 // is position valid?
                 bool valid_position = is_valid_block(pos.row, pos.col) && is_empty_block(pos.row, pos.col);
-                if (!valid_position) { //std::cout<<"cant rotate";
-                    return false; }
+                if (!valid_position)
+                {
+                    return false;
+                }
             }
         }
     }
@@ -630,7 +625,37 @@ bool can_piece_rotate(direction dir)
 
 
 // rotate the piece
-void rotate_piece()
+void rotate_piece(direction dir)
 {
-    return;
+    bool can_rotate = can_piece_rotate(DIRECTION);
+
+    Position new_position;
+
+    if (can_rotate)
+    {
+        for (int i=0; i<game->rows; i++)
+        {
+            for (int j=0; j<game->cols; j++)
+            {
+                bool condition =
+                        game->game_board[i][j].value == CELL &&
+                        game->game_board[i][j].falling_piece
+                        && !game->game_board[i][j].moved_in_prev_iteration;
+
+                if (condition)
+                {
+                    short color = game->game_board[i][j].color;
+                    // calculate new position of rotated block
+                    new_position = block_position_after_rotation(i, j, dir);
+
+                     // delete old block
+                    set_block(i, j, EMPTY_CELL, false, false, 8);
+
+                    // update new position of rotated block
+                    set_block(new_position.row, new_position.col, CELL,
+                              true, true, color);
+                }
+            }
+        }
+    }
 }
