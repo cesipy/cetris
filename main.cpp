@@ -682,15 +682,39 @@ void manage_full_lines()
             // increase score
 
             clear_line(i);
-            printw("clearing");
+
+
+            // adjust all blocks from above
+            adjust_blocks(i);
         }
     }
 }
+
 
 void clear_line(int row)
 {
     for (int col=0; col < game->cols; col++)
     {
         set_block(row, col, EMPTY_CELL, false, false, 8);
+    }
+}
+
+
+void adjust_blocks(int row)
+{
+    for (int i=row; i>=0; i--)
+    {
+        for (int j=game->cols; j>=0; j--)
+        {
+            bool condition = game->game_board[i+1][j].value = EMPTY_CELL;
+
+            if (condition)
+            {
+                game->game_board[i+1][j] = game->game_board[i][j];
+
+                // remove old block
+                set_block(i, j, EMPTY_CELL, false, false, 8);
+            }
+        }
     }
 }

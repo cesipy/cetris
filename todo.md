@@ -14,6 +14,7 @@ but in the middle
 - [ ] remove red middle point
 - [ ] eliminate full line
 - [ ] fix-17 in manage_full_lines function; problem wit game->cols
+- [ ] 8 (color value for empty) as makro
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
