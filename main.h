@@ -2,12 +2,13 @@
 #define MAIN_H
 
 #include <ncurses.h>
-#define GRAVITY_TICKS 3500
+#define GRAVITY_TICKS 350
+#define SLEEP_TIME 1000
 #define BOARD_WIDTH  30
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
-#define AMOUNT_OF_PIECES 2
+#define AMOUNT_OF_PIECES 3
 #define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
 #define DIRECTION left
 
@@ -129,6 +130,12 @@ bool is_valid_block(int rows, int cols);
  */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color);
 void piece_counter_increase(void);
+
+/**
+ * converts all falling blocks to static/fixed blocks.
+ * updates `need_new_piece`to true.
+ * updates `highest_fix_block` position in the game.
+ */
 void falling_to_fixed(void);
 bool can_piece_move(direction);
 bool is_empty_block(int, int);
@@ -139,6 +146,11 @@ int generate_random_number(int min, int max);
 
 Position block_position_after_rotation(int row, int col, direction dir);
 bool can_piece_rotate(direction dir);
+
+/**
+ * Rotates piece in direction `dir`
+ * @param dir direction the piece should rotate. please use makro`DIRECTION`
+ */
 void rotate_piece(direction dir);
 
 Position rotate_block_position(int row, int col, const Position& pivot);

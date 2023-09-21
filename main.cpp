@@ -8,7 +8,6 @@ int ch;
 WINDOW* board, * falling, *hold, *score;
 Game* game;
 int piece_counter = 0;
-#define SLEEP_TIME 100
 
 /*  ------------------------------  */
 
@@ -44,18 +43,19 @@ int main (int argc, char* argv[])
 
 void main_loop()
 {
-    int tick = 0;
+    int tick = 0;   // used for gravity rate
 
     while (game->running)
     {
-
+        // when a new piece is needed a new piece of random type is generated
         if (game->need_new_piece)
         {
             int random_piece = generate_random_number(0, 2);
             insert_falling_piece(static_cast<type>(random_piece), game);
             piece_counter_increase();
 
-            game->need_new_piece = false;
+            //
+            game->need_new_piece = false;       // is
         }
 
         int input = getch();
@@ -141,12 +141,14 @@ void display_board(Game* g)
                 }
                 else
                 {
+                    // draw block with saved color
                     ADD_BLOCK(win, game->game_board[i][j].color);
                 }
             }
 
             else
             {
+                // draw empty block
                 ADD_EMPTY(win);
             }
         }
@@ -163,7 +165,7 @@ int gravity(Game* g)
     if (!can_move_down)
     {
         falling_to_fixed();
-        game->need_new_piece = true;
+
         return 1;       // ultimate gravity turn
     }
 
@@ -430,7 +432,7 @@ void piece_counter_increase()
     piece_counter = piece_counter % (AMOUNT_OF_PIECES + 1);
 }
 
-
+/// converts all falling blocks to static/fixed blocks.
 void falling_to_fixed()
 {
     for (int i=0; i<game->rows;i++)
@@ -453,12 +455,14 @@ void falling_to_fixed()
 
                 if (condition_height)
                 {
-                    // set new highest current block
+                    // update the highest block in the game
                     game->highest_fixed_block = height;
                 }
             }
         }
     }
+    // we need a new piece. update state variable
+    game->need_new_piece = true;
 }
 
 
@@ -655,5 +659,4 @@ void rotate_piece(direction dir)
             game->game_board[i][j] = temp_board[i][j];
         }
     }
-
 }
