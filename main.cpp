@@ -706,12 +706,12 @@ void adjust_blocks(int row)
     {
         for (int j=game->cols; j>=0; j--)
         {
-            bool condition = game->game_board[i+1][j].value = EMPTY_CELL;
+            bool condition = game->game_board[i+1][j].value == EMPTY_CELL;
 
             if (condition)
             {
                 game->game_board[i+1][j] = game->game_board[i][j];
-
+                // printf("reached");
                 // remove old block
                 set_block(i, j, EMPTY_CELL, false, false, 8);
             }

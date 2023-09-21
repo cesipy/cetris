@@ -15,6 +15,10 @@ but in the middle
 - [ ] eliminate full line
 - [ ] fix-17 in manage_full_lines function; problem wit game->cols
 - [ ] 8 (color value for empty) as makro
+- [ ] adjust_blocks: fix condition to ask if i+1 block is free
+
+
+
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
