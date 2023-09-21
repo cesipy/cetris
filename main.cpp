@@ -172,9 +172,9 @@ int gravity(Game* g)
     int middle_col = game->middle_coordinate.col;
 
     // piece is moved down
-    for (int i=g->rows-1; i > 0; i--)
+    for (int i=g->rows-1; i >= 0; i--)
     {
-        for (int j= g->cols-1; j > 0; j--)
+        for (int j= g->cols-1; j >= 0; j--)
         {
             /* checks for falling pieces/blocks in order to move them every tick */
             bool condition =
