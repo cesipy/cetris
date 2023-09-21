@@ -8,7 +8,7 @@
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
-#define AMOUNT_OF_PIECES 3
+#define AMOUNT_OF_PIECES 2
 #define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
 #define DIRECTION left
 
@@ -48,7 +48,12 @@ typedef struct {
     short color; // color from 0 to 7
 }Block;
 
-
+/**
+ * game struct to store attributes of the game.
+ * @param rows rows of game
+ * @param cols cols of the game
+ * @param game_board[][] stores the board consisting of an 2d array of blocks
+ */
 typedef struct {
     // for board:
     int rows;
@@ -61,6 +66,7 @@ typedef struct {
     bool need_new_piece;        // is a piece still falling, or is a new one needed
     int highest_fixed_block;    // height of the highest current block. (to check for game-over)
     Position middle_coordinate; // store the middle point of current ffalling piece (to rotate)
+    int score;                  // store of current game iteration
     //further add
 }Game;
 
@@ -152,6 +158,8 @@ bool can_piece_rotate(direction dir);
  * @param dir direction the piece should rotate. please use makro`DIRECTION`
  */
 void rotate_piece(direction dir);
+void manage_full_lines(void);
+void clear_line(int row);
 
 Position rotate_block_position(int row, int col, const Position& pivot);
 

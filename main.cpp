@@ -26,7 +26,7 @@ int main (int argc, char* argv[])
     timeout(0);
     curs_set(0);
     keypad(stdscr, TRUE);       // allow for arrow keys
-    srand(time(0));
+    srand(time(nullptr));
 
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
@@ -54,8 +54,7 @@ void main_loop()
             insert_falling_piece(static_cast<type>(random_piece), game);
             piece_counter_increase();
 
-            //
-            game->need_new_piece = false;       // is
+            game->need_new_piece = false;
         }
 
         int input = getch();
@@ -84,7 +83,7 @@ void main_loop()
             default:
                 break;
         }
-
+        manage_full_lines();
         display_board(game);
 
         // update position if a falling piece aka gravity
@@ -658,5 +657,40 @@ void rotate_piece(direction dir)
         {
             game->game_board[i][j] = temp_board[i][j];
         }
+    }
+}
+
+
+void manage_full_lines()
+{
+    for (int i=game->rows-1; i >= 0; i--)
+    {
+        bool compare_value = true;
+        for (int j=game->cols-17; j>= 0; j--)   // needed -17 because of wrong calculation of blocks.
+        {
+            bool condition = game->game_board[i][j].value == EMPTY_CELL;
+
+            if (condition)
+            {
+                compare_value = false;
+                break;
+            }
+        }
+
+        if (compare_value)
+        {
+            // increase score
+
+            clear_line(i);
+            printw("clearing");
+        }
+    }
+}
+
+void clear_line(int row)
+{
+    for (int col=0; col < game->cols; col++)
+    {
+        set_block(row, col, EMPTY_CELL, false, false, 8);
     }
 }
