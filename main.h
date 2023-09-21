@@ -162,6 +162,7 @@ void manage_full_lines(void);
 void clear_line(int row);
 
 void adjust_blocks(int row);
+void display_score();
 
 Position rotate_block_position(int row, int col, const Position& pivot);
 

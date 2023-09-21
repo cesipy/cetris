@@ -31,6 +31,7 @@ int main (int argc, char* argv[])
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
 
+
     // example_fill_board(game);
     main_loop();
 
@@ -85,6 +86,8 @@ void main_loop()
         }
         manage_full_lines();
         display_board(game);
+
+        display_score();
 
         // update position if a falling piece aka gravity
         if (tick % GRAVITY_TICKS == 0) {
@@ -152,6 +155,7 @@ void display_board(Game* g)
             }
         }
     }
+
     box(win, 0, 0);
     wnoutrefresh(win);
 }
@@ -233,6 +237,7 @@ void game_init(Game* g, int rows, int cols)
     g->need_new_piece      = true;               // start with a new falling piece
     g->highest_fixed_block = 0;
     g->middle_coordinate   = position;
+    g->score               = 0;
 
     // further implementation
 
@@ -680,6 +685,7 @@ void manage_full_lines()
         if (compare_value)
         {
             // increase score
+            game->score++;
 
             clear_line(i);
 
@@ -710,11 +716,18 @@ void adjust_blocks(int row)
 
             if (condition)
             {
+                // copy block to one block down (i+1)
                 game->game_board[i+1][j] = game->game_board[i][j];
-                // printf("reached");
+
                 // remove old block
                 set_block(i, j, EMPTY_CELL, false, false, 8);
             }
         }
     }
+}
+
+void display_score()
+{
+    mvwprintw(game->win, 0, 0, "Score: %d", game->score);
+    wrefresh(game->win);
 }

@@ -16,9 +16,7 @@ but in the middle
 - [ ] fix-17 in manage_full_lines function; problem wit game->cols
 - [ ] 8 (color value for empty) as makro
 - [ ] adjust_blocks: fix condition to ask if i+1 block is free
-
-
-
+- [ ] refactor WIN* (game->win, instead of *board, *score, …)
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
