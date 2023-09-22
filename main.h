@@ -135,12 +135,13 @@ bool is_valid_block(int rows, int cols);
  * @param color Value from 0 to 7, indicates the color. 8 means field is free.
  */
 void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color);
+
 void piece_counter_increase(void);
 
 /**
- * converts all falling blocks to static/fixed blocks.
- * updates `need_new_piece`to true.
- * updates `highest_fix_block` position in the game.
+ * Converts all falling blocks to static/fixed blocks.
+ * Updates `need_new_piece`to true.
+ * Updates `highest_fix_block` position in the game.
  */
 void falling_to_fixed(void);
 bool can_piece_move(direction);
@@ -148,6 +149,13 @@ bool is_empty_block(int, int);
 void skip_tick_gravity(void);
 
 void check_game_state(void);
+
+/**
+ * Generates number in range (min, max).
+ * @param min
+ * @param max
+ * @return int - random number
+ */
 int generate_random_number(int min, int max);
 
 Position block_position_after_rotation(int row, int col, direction dir);
@@ -158,10 +166,32 @@ bool can_piece_rotate(direction dir);
  * @param dir direction the piece should rotate. please use makro`DIRECTION`
  */
 void rotate_piece(direction dir);
+
+/**
+ * Detects rows full with fixed blocks.
+ *
+ * When a full row is found, `clear_line(row)`and `adjust_blocks(row)` is called.
+ * In this case, the score is increased.
+ */
 void manage_full_lines(void);
+
+/**
+ * Clears all blocks in row i
+ * @param row  line to eliminate blocks in
+ */
 void clear_line(int row);
 
+/**
+ * Moves all fixed blocks above the specified row one row down.
+ *
+ * Is called by `manage_full_lines` when full line is detected.
+ * @param row adjust all all blocks above `row`.
+ */
 void adjust_blocks(int row);
+
+/**
+ * Prints current score to the game window.
+ */
 void display_score();
 
 Position rotate_block_position(int row, int col, const Position& pivot);

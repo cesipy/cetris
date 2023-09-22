@@ -689,7 +689,6 @@ void manage_full_lines()
 
             clear_line(i);
 
-
             // adjust all blocks from above
             adjust_blocks(i);
         }
@@ -725,6 +724,7 @@ void adjust_blocks(int row)
         }
     }
 }
+
 
 void display_score()
 {
