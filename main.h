@@ -45,6 +45,7 @@ typedef struct {
     bool fixed_piece;
     bool moved_in_prev_iteration;
     bool rotated_in_prev_iteration;
+    bool is_new;              // used for copy in rotation
     short color; // color from 0 to 7
 }Block;
 

@@ -250,6 +250,7 @@ void game_init(Game* g, int rows, int cols)
             set_block(i, j, EMPTY_CELL, false, false, 8);
 
             game->game_board[i][j].rotated_in_prev_iteration = false;
+            game->game_board[i][j].is_new = false;                // temp, make more beautiful!
         }
     }
 }
@@ -288,7 +289,7 @@ void insert_falling_piece(type type, Game* g)
 
         // assign middle position
         pos.row = 1;
-        pos.col = mid +1 ;
+        pos.col = mid;
     }
 
     else if (type == I)
@@ -642,20 +643,9 @@ void rotate_piece(direction dir)
 
                 // copy block from prev position
                 temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
+                temp_board[rotated_position.row][rotated_position.col].is_new = true;
                 temp_board[rotated_position.row][rotated_position.col].rotated_in_prev_iteration = true;
 
-                if (rotated_position.row != i && rotated_position.col != j && !temp_board[i][j].rotated_in_prev_iteration)
-                {
-                        temp_board[i][j].value = EMPTY_CELL;
-                        temp_board[i][j].falling_piece = false;
-                        temp_board[i][j].color = 8;
-                        temp_board[i][j].fixed_piece = false;
-                        temp_board[i][j].rotated_in_prev_iteration = false;
-                }
-                else if (temp_board[i][j].rotated_in_prev_iteration)
-                {
-                    temp_board[i][j].rotated_in_prev_iteration = false;
-                }
             }
         }
     }
@@ -665,7 +655,17 @@ void rotate_piece(direction dir)
     {
         for(int j=0; j<game->rows; j++)
         {
+            if (!temp_board[i][j].is_new)
+            {
+                temp_board[i][j].value                      = EMPTY_CELL;
+                temp_board[i][j].falling_piece              = false;
+                temp_board[i][j].color                      = 8;
+                temp_board[i][j].moved_in_prev_iteration    = false;
+                temp_board[i][j].rotated_in_prev_iteration  = false;
+
+            }
             game->game_board[i][j] = temp_board[i][j];
+            game->game_board[i][j].is_new = false;
         }
     }
 }
