@@ -8,11 +8,11 @@
 - [ ] fix bug on left edge
 - [ ] can rotate function
 - [ ] when game-over -> screen showing  status 
-- [ ] check if rotation is allowed
-- [ ] better middle point for L and J shapes. not at the edge, 
+- [x] check if rotation is allowed
+- [x] better middle point for L and J shapes. not at the edge, 
 but in the middle
 - [ ] remove red middle point
-- [ ] eliminate full line
+- [x] eliminate full line
 - [ ] fix-17 in manage_full_lines function; problem wit game->cols
 - [ ] 8 (color value for empty) as makro
 - [ ] adjust_blocks: fix condition to ask if i+1 block is free

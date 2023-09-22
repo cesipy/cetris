@@ -636,10 +636,14 @@ void rotate_piece(direction dir)
                 // get position of each block after iteration
                 Position rotated_position = block_position_after_rotation(i, j, dir);
 
-                /*
+
                 bool is_valid = is_valid_block(rotated_position.row, rotated_position.col)
                         && is_empty_block(rotated_position.row, rotated_position.col);
-                */
+
+                if (!is_valid)
+                {
+                    return;
+                }
 
                 // copy block from prev position
                 temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
