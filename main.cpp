@@ -288,7 +288,7 @@ void insert_falling_piece(type type, Game* g)
 
         // assign middle position
         pos.row = 1;
-        pos.col = mid + 1;
+        pos.col = mid +1 ;
     }
 
     else if (type == I)
@@ -417,8 +417,8 @@ void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_
     if (value == EMPTY_CELL)
     {
         game->game_board[row][col].falling_piece            = false;
-        game->game_board[row][col].fixed_piece              =  false;
-        game->game_board[row][col].moved_in_prev_iteration  =  false;
+        game->game_board[row][col].fixed_piece              = false;
+        game->game_board[row][col].moved_in_prev_iteration  = false;
     }
 
     else
@@ -650,6 +650,11 @@ void rotate_piece(direction dir)
                         temp_board[i][j].falling_piece = false;
                         temp_board[i][j].color = 8;
                         temp_board[i][j].fixed_piece = false;
+                        temp_board[i][j].rotated_in_prev_iteration = false;
+                }
+                else if (temp_board[i][j].rotated_in_prev_iteration)
+                {
+                    temp_board[i][j].rotated_in_prev_iteration = false;
                 }
             }
         }
