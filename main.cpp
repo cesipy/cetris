@@ -313,7 +313,7 @@ void insert_falling_piece(type type, Game* g)
 
         // assign middle position
         pos.row = 1;
-        pos.col = mid - 1;
+        pos.col = mid ;
     }
 
     game->middle_coordinate = pos;
@@ -655,7 +655,9 @@ void rotate_piece(direction dir)
     {
         for(int j=0; j<game->rows; j++)
         {
-            if (!temp_board[i][j].is_new)
+            // delete all old blocks, only rotated blocks (marked with .is_new) will be copied.
+            bool condition = temp_board[i][j].falling_piece && !temp_board[i][j].is_new;
+            if (condition)
             {
                 temp_board[i][j].value                      = EMPTY_CELL;
                 temp_board[i][j].falling_piece              = false;
