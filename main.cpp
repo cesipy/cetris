@@ -581,32 +581,6 @@ Position block_position_after_rotation(int row, int col, direction dir)
 }
 
 
-bool can_piece_rotate(direction dir)
-{
-    for (int i=0; i<game->rows;i++)
-    {
-        for(int j=0; j<game->cols; j++)
-        {
-            bool condition =
-                    game->game_board[i][j].falling_piece && game->game_board[i][j].value == CELL;
-
-            if (condition)
-            {
-                Position pos = block_position_after_rotation(i, j, dir);
-
-                // is position valid?
-                bool valid_position = is_valid_block(pos.row, pos.col) && is_empty_block(pos.row, pos.col);
-                if (!valid_position)
-                {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-
 // rotate the piece
 void rotate_piece(direction dir)
 {
@@ -636,13 +610,13 @@ void rotate_piece(direction dir)
                 // get position of each block after iteration
                 Position rotated_position = block_position_after_rotation(i, j, dir);
 
-
+                // check if the position of rotated block is valid
                 bool is_valid = is_valid_block(rotated_position.row, rotated_position.col)
                         && is_empty_block(rotated_position.row, rotated_position.col);
 
                 if (!is_valid)
                 {
-                    return;
+                    return;     // exit if it is not valid; temp board will be deleted.
                 }
 
                 // copy block from prev position

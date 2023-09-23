@@ -1,9 +1,9 @@
 # TODO
 
 - [ ] add other pieces than just I
-- [ ] fix error of weird block at first position
+- [x] fix error of weird block at first position
 - [ ] make whole game structure simpler
-- [ ] add score
+- [x] add score
 - [ ] make size appropriate (height)
 - [ ] fix bug on left edge
 - [ ] can rotate function
@@ -17,6 +17,8 @@ but in the middle
 - [ ] 8 (color value for empty) as makro
 - [ ] adjust_blocks: fix condition to ask if i+1 block is free
 - [ ] refactor WIN* (game->win, instead of *board, *score, …)
+- [ ] fix bug: middle point not working after multiple lines are deleted
+- [ ] show next piece
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
