@@ -8,7 +8,7 @@
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
-#define AMOUNT_OF_PIECES 2
+#define AMOUNT_OF_PIECES 7
 #define BOARD_EDGE_RIGHT (BOARD_WIDTH-17)
 #define DIRECTION left
 
@@ -19,7 +19,7 @@
 /* ----------------------------------------------------------- */
 
 enum type {
-     I, J, L
+     I, J, L, T, S, Z, O
 };
 
 

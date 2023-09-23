@@ -51,7 +51,7 @@ void main_loop()
         // when a new piece is needed a new piece of random type is generated
         if (game->need_new_piece)
         {
-            int random_piece = generate_random_number(0, 2);
+            int random_piece = generate_random_number(0, AMOUNT_OF_PIECES-1);
             insert_falling_piece(static_cast<type>(random_piece), game);
             piece_counter_increase();
 
@@ -314,6 +314,54 @@ void insert_falling_piece(type type, Game* g)
         // assign middle position
         pos.row = 1;
         pos.col = mid ;
+    }
+
+    else if (type == T)
+    {
+        set_block(1, mid - 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid    , CELL, true, false, color);
+
+        // assign middle position
+        pos.row = 1;
+        pos.col = mid;
+    }
+
+    else if (type == S )
+    {
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid    , CELL, true, false, color);
+        set_block(2, mid - 1, CELL, true, false, color);
+
+        // assign middle person
+        pos.row = 1;
+        pos.col = mid;
+    }
+
+    else if (type == Z )
+    {
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid + 1, CELL, true, false, color);
+        set_block(2, mid + 2, CELL, true, false, color);
+
+        // assign middle person
+        pos.row = 1;
+        pos.col = mid +1;
+    }
+
+    else if (type == O)
+    {
+        set_block(1, mid    , CELL, true, false, color);
+        set_block(1, mid + 1, CELL, true, false, color);
+        set_block(2, mid    , CELL, true, false, color);
+        set_block(2, mid + 1, CELL, true, false, color);
+
+        // only temporary, should not have a middle;
+        pos.row = 1;
+        pos.col = mid;
     }
 
     game->middle_coordinate = pos;
@@ -594,8 +642,6 @@ void rotate_piece(direction dir)
             temp_board[i][j].rotated_in_prev_iteration = false;
         }
     }
-
-    Position middle_pos = game->middle_coordinate;
 
     // perform rotation on copy
     for(int i=0; i<game->rows; i++)

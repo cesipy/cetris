@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] add other pieces than just I
+- [x] add other pieces than just I
 - [x] fix error of weird block at first position
 - [ ] make whole game structure simpler
 - [x] add score
@@ -19,6 +19,7 @@ but in the middle
 - [ ] refactor WIN* (game->win, instead of *board, *score, …)
 - [ ] fix bug: middle point not working after multiple lines are deleted
 - [ ] show next piece
+- [ ] decrease tick over time, dependent on score
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
