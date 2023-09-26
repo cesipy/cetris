@@ -132,16 +132,15 @@ void display_board(Game* g)
         wmove(win, i +1, 1);
         for (int j = 0; j < g->cols; j++)
         {
-            if (g->game_board[i][j].value != EMPTY_CELL)
+            // debugging: show middle coordinate
+            bool status_flag = true;
+            if (i == middle.row && j == middle.col)
+            {
+                ADD_BLOCK(win, 1);
+            }
+            else if (g->game_board[i][j].value != EMPTY_CELL)
             {
 
-
-                // debugging: show middle coordinate
-                if (i == middle.row && j == middle.col)
-                {
-                    ADD_BLOCK(win, 1);
-                }
-                else
                 {
                     // draw block with saved color
                     ADD_BLOCK(win, game->game_board[i][j].color);
@@ -444,7 +443,6 @@ void move_piece(direction dir) {
     }
 
 }
-
 
 
 bool is_valid_block(int rows, int cols)
