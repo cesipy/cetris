@@ -16,9 +16,6 @@ int main (int argc, char* argv[])
     game = new Game;    // alloc memory
     game_init(game, BOARD_HEIGHT, BOARD_WIDTH); // initialize the board struct and all its members
 
-    //fill the board with some blocks to draw
-    // example_fill_board(game);
-
     initscr();
     init_colors();
     noecho();
@@ -133,18 +130,14 @@ void display_board(Game* g)
         for (int j = 0; j < g->cols; j++)
         {
             // debugging: show middle coordinate
-            bool status_flag = true;
             if (i == middle.row && j == middle.col)
             {
                 ADD_BLOCK(win, 1);
             }
             else if (g->game_board[i][j].value != EMPTY_CELL)
             {
-
-                {
-                    // draw block with saved color
-                    ADD_BLOCK(win, game->game_board[i][j].color);
-                }
+                // draw block with saved color
+                ADD_BLOCK(win, game->game_board[i][j].color);
             }
 
             else
@@ -252,6 +245,9 @@ void game_init(Game* g, int rows, int cols)
             game->game_board[i][j].is_new = false;                // temp, make more beautiful!
         }
     }
+
+    // for debugging
+    example_fill_board(game);
 }
 
 
@@ -264,7 +260,12 @@ void example_fill_board(Game* g)
     {
         for (int j=0; j< cols; j++)
         {
-            if (i == 13 && j < BOARD_EDGE_RIGHT  && j >= 0)
+            if (i == 20 && j < BOARD_EDGE_RIGHT  && j >= 0)
+            {
+                set_block(i, j, CELL, false, false, 4);
+            }
+
+            if ( i == 21 && j < BOARD_EDGE_RIGHT && j >= 0)
             {
                 set_block(i, j, CELL, false, false, 4);
             }
@@ -740,7 +741,8 @@ void adjust_blocks(int row)
     {
         for (int j=game->cols; j>=0; j--)
         {
-            bool condition = game->game_board[i+1][j].value == EMPTY_CELL;
+            bool condition = game->game_board[i+1][j].value == EMPTY_CELL &&
+                    game->game_board[i][j].fixed_piece;
 
             if (condition)
             {
