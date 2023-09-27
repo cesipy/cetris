@@ -2,12 +2,17 @@
 #include "main.h"
 #include <unistd.h>
 #include <iostream>
+#include <random>
 
 int ch;
 
 WINDOW* board, * falling, *hold, *score;
 Game* game;
 int piece_counter = 0;
+// seed for random function
+std::random_device rd;
+std::mt19937 gen(rd());
+
 
 /*  ------------------------------  */
 
@@ -23,7 +28,6 @@ int main (int argc, char* argv[])
     timeout(0);
     curs_set(0);
     keypad(stdscr, TRUE);       // allow for arrow keys
-    srand(time(nullptr));
 
     board = newwin(game->rows, game->cols, 0, 0);
     game->win = board;
@@ -247,7 +251,7 @@ void game_init(Game* g, int rows, int cols)
     }
 
     // for debugging
-    example_fill_board(game);
+    //example_fill_board(game);
 }
 
 
@@ -595,7 +599,9 @@ void check_game_state(void)
 
 int generate_random_number(int min, int max)
 {
-    int random_number = rand() % (max+1);
+    std::uniform_int_distribution<int> distribution(min, max);
+    int random_number = distribution(gen);
+
     return random_number;
 }
 
