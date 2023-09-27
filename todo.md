@@ -10,18 +10,18 @@
 - [ ] when game-over -> screen showing  status 
 - [x] check if rotation is allowed
 - [x] better middle point for L and J shapes. not at the edge, 
-but in the middle
+      but in the middle
 - [ ] remove red middle point
 - [x] eliminate full line
 - [ ] fix-17 in manage_full_lines function; problem wit game->cols
-- [ ] 8 (color value for empty) as makro
+- [x] 8 (color value for empty) as makro
 - [ ] adjust_blocks: fix condition to ask if i+1 block is free
 - [ ] refactor WIN* (game->win, instead of *board, *score, …)
 - [x] fix bug: middle point not working after multiple lines are deleted
 - [ ] show next piece
 - [ ] decrease tick over time, dependent on score
 - [ ] O-block should not rotate
-- [ ] line clearing: all blocks should be fixed blocks
+- [x] line clearing: all blocks should be fixed blocks
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 

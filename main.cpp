@@ -99,7 +99,6 @@ void main_loop()
         usleep(SLEEP_TIME);     // sleep for a bit
         tick++;
         check_game_state();
-
     }
 }
 
@@ -243,7 +242,7 @@ void game_init(Game* g, int rows, int cols)
         {
             // fill game board with empty cells at start -> '0' is emtpy
 
-            set_block(i, j, EMPTY_CELL, false, false, 8);
+            set_block(i, j, EMPTY_CELL, false, false, NO_COLOR);
 
             game->game_board[i][j].rotated_in_prev_iteration = false;
             game->game_board[i][j].is_new = false;                // temp, make more beautiful!
@@ -271,7 +270,7 @@ void example_fill_board(Game* g)
 
             if ( i == 21 && j < BOARD_EDGE_RIGHT && j >= 0)
             {
-                set_block(i, j, CELL, false, false, 4);
+                set_block(i, j, CELL, false, false, 5);
             }
         }
     }
@@ -709,7 +708,7 @@ void manage_full_lines()
         bool compare_value = true;
         for (int j=game->cols-17; j>= 0; j--)   // needed -17 because of wrong calculation of blocks.
         {
-            bool condition = game->game_board[i][j].value == EMPTY_CELL;
+            bool condition = game->game_board[i][j].value == EMPTY_CELL || game->game_board[i][j].falling_piece;
 
             if (condition)
             {
