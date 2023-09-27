@@ -5,7 +5,7 @@
 - [ ] make whole game structure simpler
 - [x] add score
 - [ ] make size appropriate (height)
-- [ ] fix bug on left edge
+- [x] fix bug on left edge
 - [ ] can rotate function
 - [ ] when game-over -> screen showing  status 
 - [x] check if rotation is allowed
@@ -17,9 +17,11 @@ but in the middle
 - [ ] 8 (color value for empty) as makro
 - [ ] adjust_blocks: fix condition to ask if i+1 block is free
 - [ ] refactor WIN* (game->win, instead of *board, *score, …)
-- [ ] fix bug: middle point not working after multiple lines are deleted
+- [x] fix bug: middle point not working after multiple lines are deleted
 - [ ] show next piece
 - [ ] decrease tick over time, dependent on score
+- [ ] O-block should not rotate
+- [ ] line clearing: all blocks should be fixed blocks
 ## add rotation:
 specify a middle point for each falling piece. 
 there is always only one falling piece, so it can 
