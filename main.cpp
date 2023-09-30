@@ -13,6 +13,8 @@ int piece_counter = 0;
 std::random_device rd;
 std::mt19937 gen(rd());
 
+int difficulty = GRAVITY_TICKS;
+
 
 /*  ------------------------------  */
 
@@ -91,7 +93,7 @@ void main_loop()
         display_score();
 
         // update position if a falling piece aka gravity
-        if (tick % GRAVITY_TICKS == 0) {
+        if (tick % difficulty == 0) {
             gravity(game);
         }
 
@@ -99,6 +101,7 @@ void main_loop()
         usleep(SLEEP_TIME);     // sleep for a bit
         tick++;
         check_game_state();
+
     }
 }
 
@@ -748,6 +751,12 @@ void manage_full_lines()
         {
             // increase score
             game->score++;
+
+            // adjust difficulty after 5 points each
+            if (game->score % 5 == 0)
+            {
+                difficulty = (difficulty > 50) ? difficulty-=50: difficulty;
+            }
 
             clear_line(i);
 
