@@ -6,7 +6,7 @@
 
 int ch;
 
-WINDOW* board, * falling, *hold, *score;
+WINDOW* board;
 Game* game;
 int piece_counter = 0;
 // seed for random function
@@ -69,11 +69,11 @@ void main_loop()
         switch (input)
         {
             case KEY_LEFT:
-                // Move Tetromino left
+                // move left
                 move_piece(left);
                 break;
             case KEY_RIGHT:
-                // Move Tetromino right
+                // move right
                 move_piece(right);
                 break;
             case KEY_UP:
@@ -82,9 +82,9 @@ void main_loop()
                 break;
             case KEY_DOWN:
                 skip_tick_gravity();
-                // Move Tetromino down faster (if desired)
                 break;
             default:
+                // no key/ other key received
                 break;
         }
         manage_full_lines();
@@ -93,6 +93,7 @@ void main_loop()
         display_score();
 
         // update position if a falling piece aka gravity
+        // difficulty gets updated in manage_full_lines()
         if (tick % difficulty == 0) {
             gravity(game);
         }
@@ -127,20 +128,13 @@ void display_board(Game* g)
 {
     WINDOW* win = g->win;
 
-    // temp for debugging
-    Position middle = game->middle_coordinate;
-
     for(int i=0; i < g->rows; i++)
     {
         wmove(win, i +1, 1);
         for (int j = 0; j < g->cols; j++)
         {
-            // debugging: show middle coordinate
-            if (i == middle.row && j == middle.col)
-            {
-                ADD_BLOCK(win, 1);
-            }
-            else if (g->game_board[i][j].value != EMPTY_CELL)
+
+            if (g->game_board[i][j].value != EMPTY_CELL)
             {
                 // draw block with saved color
                 ADD_BLOCK(win, game->game_board[i][j].color);
