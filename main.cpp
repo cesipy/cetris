@@ -4,10 +4,7 @@
 #include <iostream>
 #include <random>
 
-int ch;
 
-WINDOW* board;
-Game* game;
 int piece_counter = 0;
 // seed for random function
 std::random_device rd;
@@ -20,49 +17,56 @@ int difficulty = GRAVITY_TICKS;
 
 int main (int argc, char* argv[])
 {
-    game = new Game;    // alloc memory
-    game_init(game, BOARD_HEIGHT, BOARD_WIDTH); // initialize the board struct and all its members
-
     initscr();
-    init_colors();
     noecho();
     resize_term(BOARD_HEIGHT,  BOARD_WIDTH);
     timeout(0);
     curs_set(0);
     keypad(stdscr, TRUE);       // allow for arrow keys
 
-    board = newwin(game->rows, game->cols, 0, 0);
-    game->win = board;
-
-
+    Game* game = new Game;    // alloc memory
+    initialize_game(game);
     // example_fill_board(game);
-    main_loop();
+    main_loop(game);
 
+    endwin();
     // free allocated objects
     delete game;
-    endwin();
+
 }
 
 /*  ------------------------------  */
 
-void main_loop()
+
+void initialize_game(Game* g)
+{
+    init_colors();      // initialize color pairs
+
+    WINDOW* board = newwin(g->rows, g->cols, 0, 0);
+    g->win = board;
+
+    game_init(g, BOARD_HEIGHT, BOARD_WIDTH); // initialize the board struct and all its members
+}
+
+
+void main_loop(Game* g)
 {
     int tick = 0;   // used for gravity rate
 
-    while (game->running)
+    while (g->running)
     {
         // when a new piece is needed a new piece of random type is generated
-        if (game->need_new_piece)
+        if (g->need_new_piece)
         {
             int random_piece = generate_random_number(0, AMOUNT_OF_PIECES-1);
-            insert_falling_piece(static_cast<type>(random_piece), game);
+            insert_falling_piece(static_cast<type>(random_piece), g);
             piece_counter_increase();
 
-            game->need_new_piece = false;
+            g->need_new_piece = false;
         }
 
         int input = getch();
-        // check for 'q' to quit the game
+        // check for 'q' to quit the g
         if (input=='q') {break;}
 
         // handle input
@@ -70,46 +74,40 @@ void main_loop()
         {
             case KEY_LEFT:
                 // move left
-                move_piece(left);
+                move_piece(left, g);
                 break;
             case KEY_RIGHT:
                 // move right
-                move_piece(right);
+                move_piece(right, g);
                 break;
             case KEY_UP:
                 // rotate
-                rotate_piece(DIRECTION);
+                rotate_piece(DIRECTION, g);
                 break;
             case KEY_DOWN:
-                skip_tick_gravity();
+                skip_tick_gravity(g);
                 break;
             default:
                 // no key/ other key received
                 break;
         }
-        manage_full_lines();
-        display_board(game);
+        manage_full_lines(g);
+        display_board(g);
 
-        display_score();
+        display_score(g);
 
         // update position if a falling piece aka gravity
         // difficulty gets updated in manage_full_lines()
         if (tick % difficulty == 0) {
-            gravity(game);
+            gravity(g);
         }
 
         doupdate();             // update all windows
         usleep(SLEEP_TIME);     // sleep for a bit
         tick++;
-        check_game_state();
+        check_game_state(g);
 
     }
-}
-
-
-int hit_bottom()
-{
-    return 0;
 }
 
 
@@ -137,7 +135,7 @@ void display_board(Game* g)
             if (g->game_board[i][j].value != EMPTY_CELL)
             {
                 // draw block with saved color
-                ADD_BLOCK(win, game->game_board[i][j].color);
+                ADD_BLOCK(win, g->game_board[i][j].color);
             }
 
             else
@@ -156,17 +154,17 @@ void display_board(Game* g)
 int gravity(Game* g)
 {
     // check if the blocks below are free
-    bool can_move_down = can_piece_move(down);
+    bool can_move_down = can_piece_move(down, g);
     if (!can_move_down)
     {
-        falling_to_fixed();
+        falling_to_fixed(g);
 
         return 1;       // ultimate gravity turn
     }
 
     // save middle point
-    int middle_row = game->middle_coordinate.row;
-    int middle_col = game->middle_coordinate.col;
+    int middle_row = g->middle_coordinate.row;
+    int middle_col = g->middle_coordinate.col;
 
     // piece is moved down
     for (int i=g->rows-1; i >= 0; i--)
@@ -179,21 +177,21 @@ int gravity(Game* g)
                     g->game_board[i][j].falling_piece &&
                     !g->game_board[i][j].moved_in_prev_iteration;
 
-            if(condition && i < game->bottom_height)
+            if(condition && i < g->bottom_height)
             {
 
                 // save the color
-                short color = game->game_board[i][j].color;
+                short color = g->game_board[i][j].color;
 
                 // update position of the falling piece on the board
-                set_block(i, j, EMPTY_CELL, false, false, 8 );
+                set_block(i, j, EMPTY_CELL, false, false, 8, g);
 
                 // update new position and set as falling piece
-                set_block(i+1, j, CELL, true, true, color);
+                set_block(i+1, j, CELL, true, true, color, g);
 
                 if (i == middle_row && j == middle_col)
                 {
-                    game->middle_coordinate.row++;
+                    g->middle_coordinate.row++;
                 }
             }
 
@@ -203,10 +201,10 @@ int gravity(Game* g)
                 g->game_board[i][j].moved_in_prev_iteration = false;
             }
 
-            else if (condition && i+1 >= game->bottom_height)
+            else if (condition && i+1 >= g->bottom_height)
             {
-                falling_to_fixed();
-                game->need_new_piece = true;
+                falling_to_fixed(g);
+                g->need_new_piece = true;
                 return 1;       // return needed for skip_tick_gravity if down arrow is pressed
             }
         }
@@ -240,10 +238,10 @@ void game_init(Game* g, int rows, int cols)
         {
             // fill game board with empty cells at start -> '0' is emtpy
 
-            set_block(i, j, EMPTY_CELL, false, false, NO_COLOR);
+            set_block(i, j, EMPTY_CELL, false, false, NO_COLOR, g);
 
-            game->game_board[i][j].rotated_in_prev_iteration = false;
-            game->game_board[i][j].is_new = false;                // temp, make more beautiful!
+            g->game_board[i][j].rotated_in_prev_iteration = false;
+            g->game_board[i][j].is_new = false;                // temp, make more beautiful!
         }
     }
 
@@ -263,12 +261,12 @@ void example_fill_board(Game* g)
         {
             if (i == 20 && j < BOARD_EDGE_RIGHT  && j >= 0)
             {
-                set_block(i, j, CELL, false, false, 4);
+                set_block(i, j, CELL, false, false, 4, g);
             }
 
             if ( i == 21 && j < BOARD_EDGE_RIGHT && j >= 0)
             {
-                set_block(i, j, CELL, false, false, 5);
+                set_block(i, j, CELL, false, false, 5, g);
             }
         }
     }
@@ -283,40 +281,40 @@ void insert_falling_piece(type type, Game* g)
 
     if (type == J)
     {
-        set_block(1, mid - 1, CELL, true, false, color);
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid + 1, CELL, true, false, color);
+        set_block(1, mid - 1, CELL, true, false, color, g);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid + 1, CELL, true, false, color, g);
 
         // assign middle position
         pos.row = 1;
         pos.col = mid;
 
         // assign piece type
-        game->piece_type = J;
+        g->piece_type = J;
     }
 
     else if (type == I)
     {
-        set_block(1, mid - 1, CELL, true, false, color);
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(1, mid + 2, CELL, true, false, color);
+        set_block(1, mid - 1, CELL, true, false, color, g);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(1, mid + 2, CELL, true, false, color, g);
 
         // assign middle position
         pos.row = 1;
         pos.col = mid + 1;
 
         // assign piece type
-        game->piece_type = I;
+        g->piece_type = I;
     }
 
     else if (type == L)
     {
-        set_block(1, mid - 1, CELL, true, false, color);
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid - 1, CELL, true, false, color);
+        set_block(1, mid - 1, CELL, true, false, color, g);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid - 1, CELL, true, false, color, g);
 
         // assign middle position
         pos.row = 1;
@@ -324,15 +322,15 @@ void insert_falling_piece(type type, Game* g)
 
 
         // assign piece type
-        game->piece_type = L;
+        g->piece_type = L;
     }
 
     else if (type == T)
     {
-        set_block(1, mid - 1, CELL, true, false, color);
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid    , CELL, true, false, color);
+        set_block(1, mid - 1, CELL, true, false, color, g);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid    , CELL, true, false, color, g);
 
         // assign middle position
         pos.row = 1;
@@ -340,15 +338,15 @@ void insert_falling_piece(type type, Game* g)
 
 
         // assign piece type
-        game->piece_type = T;
+        g->piece_type = T;
     }
 
     else if (type == S )
     {
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid    , CELL, true, false, color);
-        set_block(2, mid - 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid    , CELL, true, false, color, g);
+        set_block(2, mid - 1, CELL, true, false, color, g);
 
         // assign middle person
         pos.row = 1;
@@ -356,124 +354,124 @@ void insert_falling_piece(type type, Game* g)
 
 
         // assign piece type
-        game->piece_type = S;
+        g->piece_type = S;
     }
 
     else if (type == Z )
     {
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid + 1, CELL, true, false, color);
-        set_block(2, mid + 2, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid + 2, CELL, true, false, color, g);
 
         // assign middle person
         pos.row = 1;
         pos.col = mid +1;
 
         // assign piece type
-        game->piece_type = Z;
+        g->piece_type = Z;
     }
 
     else if (type == O)
     {
-        set_block(1, mid    , CELL, true, false, color);
-        set_block(1, mid + 1, CELL, true, false, color);
-        set_block(2, mid    , CELL, true, false, color);
-        set_block(2, mid + 1, CELL, true, false, color);
+        set_block(1, mid    , CELL, true, false, color, g);
+        set_block(1, mid + 1, CELL, true, false, color, g);
+        set_block(2, mid    , CELL, true, false, color, g);
+        set_block(2, mid + 1, CELL, true, false, color, g);
 
         // only temporary, should not have a middle;
         pos.row = 1;
         pos.col = mid;
 
         // assign piece type
-        game->piece_type = O;
+        g->piece_type = O;
     }
 
-    game->middle_coordinate = pos;
+    g->middle_coordinate = pos;
 }
 
 
-void move_piece(direction dir) {
-    bool can_move = can_piece_move(dir);
+void move_piece(direction dir, Game* g) {
+    bool can_move = can_piece_move(dir, g);
 
     if (!can_move)
     {
         return;
     }
 
-    // traverse the game board in the direction based on the dir parameter
+    // traverse the g board in the direction based on the dir parameter
     if (dir == right)
     {
-        for (int i = game->rows -1; i >= 0; i--)
+        for (int i = g->rows - 1; i >= 0; i--)
         {
-            for (int j = game->cols - 1; j >= 0; j--)
+            for (int j = g->cols - 1; j >= 0; j--)
             {
-                bool condition = game->game_board[i][j].value == CELL &&
-                                 game->game_board[i][j].falling_piece;
+                bool condition = g->game_board[i][j].value == CELL &&
+                                 g->game_board[i][j].falling_piece;
 
                 if (condition)
                 {
                     // calculate the new column index
                     int new_j = j + 1;
 
-                    if (is_valid_block(i, new_j) )
+                    if (is_valid_block(i, new_j, g) )
                     {
                         // save the color
-                        short color = game->game_board[i][j].color;
+                        short color = g->game_board[i][j].color;
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false, 8);
+                        set_block(i, j, EMPTY_CELL, false, false, 8, g);
 
                         // set new block at the updated position
-                        set_block(i, new_j, CELL, true, false, color);
+                        set_block(i, new_j, CELL, true, false, color, g);
 
                     }
                 }
             }
         }
         // update position of middle coordinate to the right
-        game->middle_coordinate.col++;
+        g->middle_coordinate.col++;
     }
 
     // if dir == left, traverse the list the way around
     else
     {
-        for (int i = 0; i < game->rows; i++)
+        for (int i = 0; i < g->rows; i++)
         {
-            for (int j = 0; j < game->cols; j++)
+            for (int j = 0; j < g->cols; j++)
             {
-                bool condition = game->game_board[i][j].value == CELL &&
-                                 game->game_board[i][j].falling_piece;
+                bool condition = g->game_board[i][j].value == CELL &&
+                                 g->game_board[i][j].falling_piece;
 
                 if (condition)
                 {
                     // calculate the new column index
                     int new_j = j - 1;
 
-                    if (is_valid_block(i, new_j))
+                    if (is_valid_block(i, new_j, g))
                     {
 
                         // save the color
-                        short color = game->game_board[i][j].color;
+                        short color = g->game_board[i][j].color;
 
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false, 8);
+                        set_block(i, j, EMPTY_CELL, false, false, 8, g);
 
                         // set new block at the updated position
-                        set_block(i, new_j, CELL, true, false, color);
+                        set_block(i, new_j, CELL, true, false, color ,g);
                     }
                 }
             }
         }
         // update position of middle coordinate to the left
-        game->middle_coordinate.col--;
+        g->middle_coordinate.col--;
     }
 
 }
 
 
-bool is_valid_block(int rows, int cols)
+bool is_valid_block(int rows, int cols, Game* g)
 {
-    bool condition1 = rows >= 0 && rows < game->rows - 2;
+    bool condition1 = rows >= 0 && rows < g->rows - 2;
     bool condition2 = cols >= 0 && cols <= BOARD_EDGE_RIGHT;
 
     if (condition1 && condition2)
@@ -483,22 +481,22 @@ bool is_valid_block(int rows, int cols)
 }
 
 
-void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color)
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color, Game* g)
 {
-    game->game_board[row][col].value                        = value;
-    game->game_board[row][col].color                        = color;
+    g->game_board[row][col].value                        = value;
+    g->game_board[row][col].color                        = color;
     if (value == EMPTY_CELL)
     {
-        game->game_board[row][col].falling_piece            = false;
-        game->game_board[row][col].fixed_piece              = false;
-        game->game_board[row][col].moved_in_prev_iteration  = false;
+        g->game_board[row][col].falling_piece            = false;
+        g->game_board[row][col].fixed_piece              = false;
+        g->game_board[row][col].moved_in_prev_iteration  = false;
     }
 
     else
     {
-        game->game_board[row][col].falling_piece = is_falling;
-        game->game_board[row][col].fixed_piece = !is_falling;
-        game->game_board[row][col].moved_in_prev_iteration = moved_in_prev_iteration;
+        g->game_board[row][col].falling_piece = is_falling;
+        g->game_board[row][col].fixed_piece = !is_falling;
+        g->game_board[row][col].moved_in_prev_iteration = moved_in_prev_iteration;
     }
 }
 
@@ -510,47 +508,47 @@ void piece_counter_increase()
 }
 
 /// converts all falling blocks to static/fixed blocks.
-void falling_to_fixed()
+void falling_to_fixed(Game* g)
 {
-    for (int i=0; i<game->rows;i++)
+    for (int i=0; i < g->rows; i++)
     {
-        for (int j=0; j<game->cols;j++)
+        for (int j=0; j < g->cols; j++)
         {
-            bool condition = game->game_board[i][j].value == CELL &&
-                    game->game_board[i][j].falling_piece;
+            bool condition = g->game_board[i][j].value == CELL &&
+                             g->game_board[i][j].falling_piece;
 
             if (condition)
             {
                 // save the color
-                short color = game->game_board[i][j].color;
+                short color = g->game_board[i][j].color;
 
                 // set to falling piece
-                set_block(i, j, CELL, false, false, color);
+                set_block(i, j, CELL, false, false, color, g);
                 int height = BOARD_HEIGHT - i;
 
-                bool condition_height = height > game->highest_fixed_block;
+                bool condition_height = height > g->highest_fixed_block;
 
                 if (condition_height)
                 {
-                    // update the highest block in the game
-                    game->highest_fixed_block = height;
+                    // update the highest block in the g
+                    g->highest_fixed_block = height;
                 }
             }
         }
     }
     // we need a new piece. update state variable
-    game->need_new_piece = true;
+    g->need_new_piece = true;
 }
 
 
-bool can_piece_move(direction dir)
+bool can_piece_move(direction dir, Game* g)
 {
-    for (int i = 0; i < game->rows; i++)
+    for (int i = 0; i < g->rows; i++)
     {
-        for (int j = 0; j < game->cols; j++)
+        for (int j = 0; j < g->cols; j++)
         {
-            bool condition = game->game_board[i][j].value == CELL &&
-                             game->game_board[i][j].falling_piece;
+            bool condition = g->game_board[i][j].value == CELL &&
+                             g->game_board[i][j].falling_piece;
 
             if (condition)
             {
@@ -571,12 +569,12 @@ bool can_piece_move(direction dir)
                 {
                     new_i = i + 1;
                 }
-                bool valid_block = is_valid_block(new_i, new_j);
+                bool valid_block = is_valid_block(new_i, new_j, g);
 
-                bool empty_block = is_empty_block(new_i, new_j);
+                bool empty_block = is_empty_block(new_i, new_j ,g);
 
                 // check if the new position is valid and not colliding with other pieces
-                if (!is_valid_block(new_i, new_j) || !is_empty_block(new_i, new_j))
+                if (!is_valid_block(new_i, new_j, g) || !is_empty_block(new_i, new_j, g))
                 {
                     return false; // collision detected
                 }
@@ -587,9 +585,9 @@ bool can_piece_move(direction dir)
 }
 
 
-bool is_empty_block(int row, int col)
+bool is_empty_block(int row, int col, Game* g)
 {
-    bool condition = !game->game_board[row][col].fixed_piece;
+    bool condition = !g->game_board[row][col].fixed_piece;
     if (condition)
     {
         return true;
@@ -598,23 +596,23 @@ bool is_empty_block(int row, int col)
 }
 
 
-void skip_tick_gravity()
+void skip_tick_gravity(Game* g)
 {
-    int status_gravity = gravity(game);
+    int status_gravity = gravity(g);
     while (status_gravity != 1)
     {
-        status_gravity = gravity(game);
+        status_gravity = gravity(g);
     }
 }
 
 
 // check for highest current block
-void check_game_state(void)
+void check_game_state(Game* g)
 {
     // check if highest current block reaches top -> game-over
-    if (game->highest_fixed_block >= BOARD_HEIGHT-1)
+    if (g->highest_fixed_block >= BOARD_HEIGHT-1)
     {
-        game->running = false;
+        g->running = false;
     }
 }
 
@@ -627,11 +625,11 @@ int generate_random_number(int min, int max)
 }
 
 
-Position block_position_after_rotation(int row, int col, direction dir)
+Position block_position_after_rotation(int row, int col, direction dir, Game* g)
 {
     Position pos;
 
-    Position middle_position = game->middle_coordinate;
+    Position middle_position = g->middle_coordinate;
 
     // Calculate the delta from the middle coordinate
     int delta_row = row - middle_position.row;
@@ -656,37 +654,37 @@ Position block_position_after_rotation(int row, int col, direction dir)
 
 
 // rotate the piece
-void rotate_piece(direction dir)
+void rotate_piece(direction dir, Game* g)
 {
-    if (game->piece_type == O)
+    if (g->piece_type == O)
     { return; }
-    // temporary copy of game board
+    // temporary copy of g board
     Block temp_board[BOARD_HEIGHT][BOARD_WIDTH];
-    for(int i=0; i<game->rows; i++)
+    for(int i=0; i < g->rows; i++)
     {
-        for(int j=0; j<game->cols; j++)
+        for(int j=0; j < g->cols; j++)
         {
-            temp_board[i][j] = game->game_board[i][j];
+            temp_board[i][j] = g->game_board[i][j];
             temp_board[i][j].rotated_in_prev_iteration = false;
         }
     }
 
     // perform rotation on copy
-    for(int i=0; i<game->rows; i++)
+    for(int i=0; i < g->rows; i++)
     {
-        for(int j=0; j<game->cols; j++)
+        for(int j=0; j < g->cols; j++)
         {
-            bool condition = game->game_board[i][j].value == CELL
-                    && game->game_board[i][j].falling_piece;
+            bool condition = g->game_board[i][j].value == CELL
+                             && g->game_board[i][j].falling_piece;
 
             if (condition)
             {
                 // get position of each block after iteration
-                Position rotated_position = block_position_after_rotation(i, j, dir);
+                Position rotated_position = block_position_after_rotation(i, j, dir, g);
 
                 // check if the position of rotated block is valid
-                bool is_valid = is_valid_block(rotated_position.row, rotated_position.col)
-                        && is_empty_block(rotated_position.row, rotated_position.col);
+                bool is_valid = is_valid_block(rotated_position.row, rotated_position.col, g)
+                        && is_empty_block(rotated_position.row, rotated_position.col, g);
 
                 if (!is_valid)
                 {
@@ -694,7 +692,7 @@ void rotate_piece(direction dir)
                 }
 
                 // copy block from prev position
-                temp_board[rotated_position.row][rotated_position.col] = game->game_board[i][j];
+                temp_board[rotated_position.row][rotated_position.col] = g->game_board[i][j];
                 temp_board[rotated_position.row][rotated_position.col].is_new = true;
                 temp_board[rotated_position.row][rotated_position.col].rotated_in_prev_iteration = true;
 
@@ -702,10 +700,10 @@ void rotate_piece(direction dir)
         }
     }
 
-    // copy from temp board to real game board
-    for(int i=0; i<game->rows; i++)
+    // copy from temp board to real g board
+    for(int i=0; i < g->rows; i++)
     {
-        for(int j=0; j<game->rows; j++)
+        for(int j=0; j < g->rows; j++)
         {
             // delete all old blocks, only rotated blocks (marked with .is_new) will be copied.
             bool condition = temp_board[i][j].falling_piece && !temp_board[i][j].is_new;
@@ -718,21 +716,21 @@ void rotate_piece(direction dir)
                 temp_board[i][j].rotated_in_prev_iteration  = false;
 
             }
-            game->game_board[i][j] = temp_board[i][j];
-            game->game_board[i][j].is_new = false;
+            g->game_board[i][j] = temp_board[i][j];
+            g->game_board[i][j].is_new = false;
         }
     }
 }
 
 
-void manage_full_lines()
+void manage_full_lines(Game* g)
 {
-    for (int i=game->rows-1; i >= 0; i--)
+    for (int i= g->rows - 1; i >= 0; i--)
     {
         bool compare_value = true;
-        for (int j=game->cols-17; j>= 0; j--)   // needed -17 because of wrong calculation of blocks.
+        for (int j= g->cols - 17; j >= 0; j--)   // needed -17 because of wrong calculation of blocks.
         {
-            bool condition = game->game_board[i][j].value == EMPTY_CELL || game->game_board[i][j].falling_piece;
+            bool condition = g->game_board[i][j].value == EMPTY_CELL || g->game_board[i][j].falling_piece;
 
             if (condition)
             {
@@ -744,56 +742,56 @@ void manage_full_lines()
         if (compare_value)
         {
             // increase score
-            game->score++;
+            g->score++;
 
             // adjust difficulty after 5 points each
-            if (game->score % 5 == 0)
+            if (g->score % 5 == 0)
             {
                 difficulty = (difficulty > 50) ? difficulty-=50: difficulty;
             }
 
-            clear_line(i);
+            clear_line(i, g);
 
             // adjust all blocks from above
-            adjust_blocks(i);
+            adjust_blocks(i, g);
         }
     }
 }
 
 
-void clear_line(int row)
+void clear_line(int row, Game* g)
 {
-    for (int col=0; col < game->cols; col++)
+    for (int col=0; col < g->cols; col++)
     {
-        set_block(row, col, EMPTY_CELL, false, false, 8);
+        set_block(row, col, EMPTY_CELL, false, false, 8, g);
     }
 }
 
 
-void adjust_blocks(int row)
+void adjust_blocks(int row, Game* g)
 {
     for (int i=row; i>=0; i--)
     {
-        for (int j=game->cols; j>=0; j--)
+        for (int j=g->cols; j>=0; j--)
         {
-            bool condition = game->game_board[i+1][j].value == EMPTY_CELL &&
-                    game->game_board[i][j].fixed_piece;
+            bool condition = g->game_board[i+1][j].value == EMPTY_CELL &&
+                    g->game_board[i][j].fixed_piece;
 
             if (condition)
             {
                 // copy block to one block down (i+1)
-                game->game_board[i+1][j] = game->game_board[i][j];
+                g->game_board[i+1][j] = g->game_board[i][j];
 
                 // remove old block
-                set_block(i, j, EMPTY_CELL, false, false, 8);
+                set_block(i, j, EMPTY_CELL, false, false, 8, g);
             }
         }
     }
 }
 
 
-void display_score()
+void display_score(Game* g)
 {
-    mvwprintw(game->win, 0, 0, "Score: %d", game->score);
-    wrefresh(game->win);
+    mvwprintw(g->win, 0, 0, "Score: %d", g->score);
+    wrefresh(g->win);
 }

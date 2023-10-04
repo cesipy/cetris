@@ -89,9 +89,9 @@ typedef struct {
 }Coordinate;
 
 /* ----------------------------------------------------------- */
-
+void initialize_game(Game* g);
+void main_loop(Game* g);
 void insert_falling_piece(type type, Game* g);
-void main_loop();
 int hit_bottom();
 void init_colors();
 void game_init(Game*, int rows, int cols);
@@ -115,7 +115,7 @@ void example_fill_board(Game* g);
 /**
  * move a piece in direction 'dir'.
  */
-void move_piece(direction);
+void move_piece(direction, Game* g);
 
 /**
  * Check if a block at the specified row and column is within the valid game board boundaries.
@@ -124,7 +124,7 @@ void move_piece(direction);
  * @param col The column of the block to check.
  * @return true if the block is within the valid game board boundaries, false otherwise.
  */
-bool is_valid_block(int rows, int cols);
+bool is_valid_block(int rows, int cols, Game* g);
 
 
 /**
@@ -137,7 +137,7 @@ bool is_valid_block(int rows, int cols);
  * @param moved_in_prev_iteration Whether the block was moved in the previous iteration.
  * @param color Value from 0 to 7, indicates the color. 8 means field is free.
  */
-void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color);
+void set_block(int row, int col, int value, bool is_falling, bool moved_in_prev_iteration, short color, Game* g);
 
 void piece_counter_increase(void);
 
@@ -146,12 +146,12 @@ void piece_counter_increase(void);
  * Updates `need_new_piece`to true.
  * Updates `highest_fix_block` position in the game.
  */
-void falling_to_fixed(void);
-bool can_piece_move(direction);
-bool is_empty_block(int, int);
-void skip_tick_gravity(void);
+void falling_to_fixed( Game* g);
+bool can_piece_move(direction, Game* g);
+bool is_empty_block(int, int, Game* g);
+void skip_tick_gravity( Game* g);
 
-void check_game_state(void);
+void check_game_state(Game* g);
 
 /**
  * Generates number in range (min, max).
@@ -161,13 +161,13 @@ void check_game_state(void);
  */
 int generate_random_number(int min, int max);
 
-Position block_position_after_rotation(int row, int col, direction dir);
+Position block_position_after_rotation(int row, int col, direction dir, Game* g);
 
 /**
  * Rotates piece in direction `dir`
  * @param dir direction the piece should rotate. please use makro`DIRECTION`
  */
-void rotate_piece(direction dir);
+void rotate_piece(direction dir, Game* g);
 
 /**
  * Detects rows full with fixed blocks.
@@ -175,13 +175,13 @@ void rotate_piece(direction dir);
  * When a full row is found, `clear_line(row)`and `adjust_blocks(row)` is called.
  * In this case, the score is increased.
  */
-void manage_full_lines(void);
+void manage_full_lines(Game* g);
 
 /**
  * Clears all blocks in row i
  * @param row  line to eliminate blocks in
  */
-void clear_line(int row);
+void clear_line(int row, Game* g);
 
 /**
  * Moves all fixed blocks above the specified row one row down.
@@ -189,12 +189,12 @@ void clear_line(int row);
  * Is called by `manage_full_lines` when full line is detected.
  * @param row adjust all all blocks above `row`.
  */
-void adjust_blocks(int row);
+void adjust_blocks(int row, Game* g);
 
 /**
  * Prints current score to the game window.
  */
-void display_score();
+void display_score(Game* g);
 
 Position rotate_block_position(int row, int col, const Position& pivot);
 
