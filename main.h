@@ -148,7 +148,19 @@ void piece_counter_increase(void);
  */
 void falling_to_fixed( Game* g);
 bool can_piece_move(direction, Game* g);
+
+/**
+ * Checks if block is empty.
+ * @param g
+ * @return
+ */
 bool is_empty_block(int, int, Game* g);
+
+/**
+ * Skips gravity until block hits bottom.
+ * Is used when down arrow is pressed.
+ * @param g
+ */
 void skip_tick_gravity( Game* g);
 
 void check_game_state(Game* g);
@@ -196,10 +208,8 @@ void adjust_blocks(int row, Game* g);
  */
 void display_score(Game* g);
 
-Position rotate_block_position(int row, int col, const Position& pivot);
 
+int check_input(Game* g);
 
-void alloc_game_board();
-void dealloc_game_board();
 
 #endif

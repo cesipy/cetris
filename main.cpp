@@ -52,6 +52,7 @@ void initialize_game(Game* g)
 void main_loop(Game* g)
 {
     int tick = 0;   // used for gravity rate
+    int status;
 
     while (g->running)
     {
@@ -65,32 +66,11 @@ void main_loop(Game* g)
             g->need_new_piece = false;
         }
 
-        int input = getch();
-        // check for 'q' to quit the g
-        if (input=='q') {break;}
+        // check for input (q, arrow up, down, right, left)
+        status = check_input(g);
 
-        // handle input
-        switch (input)
-        {
-            case KEY_LEFT:
-                // move left
-                move_piece(left, g);
-                break;
-            case KEY_RIGHT:
-                // move right
-                move_piece(right, g);
-                break;
-            case KEY_UP:
-                // rotate
-                rotate_piece(DIRECTION, g);
-                break;
-            case KEY_DOWN:
-                skip_tick_gravity(g);
-                break;
-            default:
-                // no key/ other key received
-                break;
-        }
+        if (status == 0) { break; }
+
         manage_full_lines(g);
         display_board(g);
 
@@ -148,6 +128,38 @@ void display_board(Game* g)
 
     box(win, 0, 0);
     wnoutrefresh(win);
+}
+
+
+int check_input(Game* g)
+{
+    int input = getch();
+    // check for 'q' to quit the g
+    if (input=='q') {return 0;}
+
+    // handle input
+    switch (input)
+    {
+        case KEY_LEFT:
+            // move left
+            move_piece(left, g);
+            break;
+        case KEY_RIGHT:
+            // move right
+            move_piece(right, g);
+            break;
+        case KEY_UP:
+            // rotate
+            rotate_piece(DIRECTION, g);
+            break;
+        case KEY_DOWN:
+            skip_tick_gravity(g);
+            break;
+        default:
+            // no key/ other key received
+            break;
+    }
+    return 1;
 }
 
 
