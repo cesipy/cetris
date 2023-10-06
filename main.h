@@ -71,6 +71,7 @@ typedef struct {
     int score;                  // store of current game iteration
     type piece_type;            // type of falling piece
     //further add
+    int difficulty;
 }Game;
 
 
@@ -208,8 +209,5 @@ void adjust_blocks(int row, Game* g);
  */
 void display_score(Game* g);
 
-
 int check_input(Game* g);
-
-
 #endif

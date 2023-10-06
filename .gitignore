@@ -5,3 +5,4 @@ backend.o
 main.o
 block.o
 .DS_Store
+tetris.o
