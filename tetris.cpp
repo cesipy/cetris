@@ -1,4 +1,4 @@
-#include "main.h"
+#include "tetris.h"
 
 int gravity(Game* g)
 {
@@ -33,7 +33,7 @@ int gravity(Game* g)
                 short color = g->game_board[i][j].color;
 
                 // update position of the falling piece on the board
-                set_block(i, j, EMPTY_CELL, false, false, 8, g);
+                set_block(i, j, EMPTY_CELL, false, false, NO_COLOR, g);
 
                 // update new position and set as falling piece
                 set_block(i+1, j, CELL, true, true, color, g);
@@ -232,7 +232,7 @@ void move_piece(direction dir, Game* g) {
                         // save the color
                         short color = g->game_board[i][j].color;
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false, 8, g);
+                        set_block(i, j, EMPTY_CELL, false, false, NO_COLOR, g);
 
                         // set new block at the updated position
                         set_block(i, new_j, CELL, true, false, color, g);
@@ -267,7 +267,7 @@ void move_piece(direction dir, Game* g) {
                         short color = g->game_board[i][j].color;
 
                         // delete old block
-                        set_block(i, j, EMPTY_CELL, false, false, 8, g);
+                        set_block(i, j, EMPTY_CELL, false, false, NO_COLOR, g);
 
                         // set new block at the updated position
                         set_block(i, new_j, CELL, true, false, color ,g);
@@ -400,7 +400,7 @@ void rotate_piece(direction dir, Game* g)
             {
                 temp_board[i][j].value                      = EMPTY_CELL;
                 temp_board[i][j].falling_piece              = false;
-                temp_board[i][j].color                      = 8;
+                temp_board[i][j].color                      = NO_COLOR;
                 temp_board[i][j].moved_in_prev_iteration    = false;
                 temp_board[i][j].rotated_in_prev_iteration  = false;
 
@@ -453,7 +453,7 @@ void clear_line(int row, Game* g)
 {
     for (int col=0; col < g->cols; col++)
     {
-        set_block(row, col, EMPTY_CELL, false, false, 8, g);
+        set_block(row, col, EMPTY_CELL, false, false, NO_COLOR, g);
     }
 }
 
@@ -473,7 +473,7 @@ void adjust_blocks(int row, Game* g)
                 g->game_board[i+1][j] = g->game_board[i][j];
 
                 // remove old block
-                set_block(i, j, EMPTY_CELL, false, false, 8, g);
+                set_block(i, j, EMPTY_CELL, false, false, NO_COLOR, g);
             }
         }
     }

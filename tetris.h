@@ -2,6 +2,8 @@
 #define MAIN_H
 
 #include <ncurses.h>
+#include <random>
+#include <unistd.h>
 #define GRAVITY_TICKS 350
 #define SLEEP_TIME 1000
 #define BOARD_WIDTH  30
