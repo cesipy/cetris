@@ -5,7 +5,7 @@ CC = g++
 CFLAGS = -c
 
 # Linker flags
-LDFLAGS = -lcurses
+LDFLAGS = -lncurses
 
 # Source files
 SOURCES = tetris.cpp main.cpp game.cpp
@@ -20,7 +20,7 @@ HEADER = tetris.h
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
