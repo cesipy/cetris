@@ -7,3 +7,4 @@ block.o
 .DS_Store
 tetris.o
 game.o
+todo.md
