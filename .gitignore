@@ -8,3 +8,4 @@ block.o
 tetris.o
 game.o
 todo.md
+graphics.o

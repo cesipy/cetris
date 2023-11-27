@@ -15,9 +15,13 @@ short parse_agruments(int argc, char* argv[])
     {
         return 2;
     }
+    else if (strcmp(argv [1], "--graphics") == 0)
+    {
+        return 1;
+    }
     else
     {
-        std::cerr << "incorrect usage! Usage: "<< argv[0] << " [--no-graphics]" << "\n";
+        std::cerr << "incorrect usage! Usage: "<< argv[0] << " [--no-graphics/--graphics]" << "\n";
         return 0;
     }
 }
@@ -26,16 +30,13 @@ short parse_agruments(int argc, char* argv[])
 
 int main (int argc, char* argv[])
 {
-    short args = parse_agruments(argc, argv);
-     
-    
-    initscr();
-    noecho();
-    resize_term(BOARD_HEIGHT,  BOARD_WIDTH);
-    timeout(0);
-    curs_set(0);
-    keypad(stdscr, TRUE);       // allow for arrow keys
+    short arg = parse_agruments(argc, argv);
 
+    if (arg == 1) {
+        // defaut, graphics are activated
+        initialize_graphics();   
+    }
+    
     Game* game = new Game;    // alloc memory
     initialize_game(game);
     // example_fill_board(game);

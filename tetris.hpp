@@ -213,4 +213,10 @@ void adjust_blocks(int row, Game* g);
 void display_score(Game* g);
 
 int check_input(Game* g);
+
+
+/* ----------------------------------------------------------- */
+// functions in graphics.cpp
+void initialize_graphics();
+
 #endif
