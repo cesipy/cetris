@@ -75,6 +75,7 @@ typedef struct {
     type piece_type;            // type of falling piece
     //further add
     int difficulty;
+    bool graphics;
 }Game;
 
 
@@ -99,7 +100,7 @@ void insert_falling_piece(type type, Game* g);
 int hit_bottom();
 void init_colors();
 void game_init(Game*, int rows, int cols);
-void display_board(Game* g);
+
 
 /**
  * Apply gravity to the falling piece on the game board.
@@ -207,16 +208,17 @@ void clear_line(int row, Game* g);
  */
 void adjust_blocks(int row, Game* g);
 
-/**
- * Prints current score to the game window.
- */
-void display_score(Game* g);
-
 int check_input(Game* g);
 
 
 /* ----------------------------------------------------------- */
 // functions in graphics.cpp
 void initialize_graphics();
+void display_board(Game* g);
+
+/**
+ * Prints current score to the game window.
+ */
+void display_score(Game* g);
 
 #endif

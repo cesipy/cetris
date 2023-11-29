@@ -63,35 +63,6 @@ void init_colors()
 }
 
 
-void display_board(Game* g)
-{
-    WINDOW* win = g->win;
-
-    for(int i=0; i < g->rows; i++)
-    {
-        wmove(win, i +1, 1);
-        for (int j = 0; j < g->cols; j++)
-        {
-
-            if (g->game_board[i][j].value != EMPTY_CELL)
-            {
-                // draw block with saved color
-                ADD_BLOCK(win, g->game_board[i][j].color);
-            }
-
-            else
-            {
-                // draw empty block
-                ADD_EMPTY(win);
-            }
-        }
-    }
-
-    box(win, 0, 0);
-    wnoutrefresh(win);
-}
-
-
 int check_input(Game* g)
 {
     int input = getch();
@@ -173,11 +144,4 @@ int generate_random_number(int min, int max)
     int random_number = distribution(gen);
 
     return random_number;
-}
-
-
-void display_score(Game* g)
-{
-    mvwprintw(g->win, 0, 0, "Score: %d", g->score);
-    wrefresh(g->win);
 }

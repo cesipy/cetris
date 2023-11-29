@@ -39,7 +39,6 @@ int main (int argc, char* argv[])
     
     Game* game = new Game;    // alloc memory
     initialize_game(game);
-    // example_fill_board(game);
     main_loop(game);
 
     endwin();
