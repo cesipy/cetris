@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef TETRIS_H
+#define TETRIS_H
 
 #include <ncurses.h>
 #include <random>

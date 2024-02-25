@@ -8,7 +8,7 @@ CFLAGS = -c
 LDFLAGS = -lncurses
 
 # Source files
-SOURCES = tetris.cpp main.cpp game.cpp graphics.cpp
+SOURCES = src/tetris.cpp src/main.cpp src/game.cpp src/graphics.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Executable name

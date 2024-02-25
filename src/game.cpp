@@ -1,4 +1,4 @@
-#include "tetris.hpp"
+#include "../include/tetris.hpp"
 
 void initialize_game(Game* g)
 {

@@ -1,4 +1,4 @@
-#include "tetris.hpp"
+#include "../include/tetris.hpp"
 
 /**
  * parses command line arguments for the game.
