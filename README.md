@@ -11,4 +11,4 @@ Play using `./tetris`.
 
 
 ### Showcase
-[!showcase](showcase.gif)
+![showcase](showcase.gif)
