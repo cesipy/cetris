@@ -5,9 +5,13 @@
 #include <random>
 #include <unistd.h>
 #include <iostream>
+
+#include <fstream>
+#include <string>
+
 #define GRAVITY_TICKS 350
 #define SLEEP_TIME 1000
-#define BOARD_WIDTH  30
+#define BOARD_WIDTH  26
 #define BOARD_HEIGHT 30
 #define EMPTY_CELL 0
 #define CELL 1
@@ -221,4 +225,10 @@ void display_board(Game* g);
  */
 void display_score(Game* g);
 
+
+// logger
+std::string getCurrentDateTime( std::string s );
+void Logger( std::string logMsg );
+
 #endif
+

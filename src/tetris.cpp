@@ -88,7 +88,7 @@ void example_fill_board(Game* g)
 
 void insert_falling_piece(type type, Game* g)
 {
-    int mid = 8;
+    int mid = 6;
     short color = generate_random_number(0, 7);
     Position pos;
 
@@ -344,7 +344,7 @@ Position block_position_after_rotation(int row, int col, direction dir, Game* g)
 
 // rotate the piece
 void rotate_piece(direction dir, Game* g)
-{
+{   
     if (g->piece_type == O)
     { return; }
     // temporary copy of g board
@@ -358,6 +358,9 @@ void rotate_piece(direction dir, Game* g)
         }
     }
 
+    Logger("rotating piece, after copy");
+
+    
     // perform rotation on copy
     for(int i=0; i < g->rows; i++)
     {
@@ -366,6 +369,9 @@ void rotate_piece(direction dir, Game* g)
             bool condition = g->game_board[i][j].value == CELL
                              && g->game_board[i][j].falling_piece;
 
+            //Logger("rotating piece, after condition");
+
+            
             if (condition)
             {
                 // get position of each block after iteration
@@ -377,6 +383,8 @@ void rotate_piece(direction dir, Game* g)
 
                 if (!is_valid)
                 {
+                    Logger("rotating piece, returning, !is_valid");
+                   
                     return;     // exit if it is not valid; temp board will be deleted.
                 }
 
@@ -389,10 +397,12 @@ void rotate_piece(direction dir, Game* g)
         }
     }
 
+    Logger("rotating piece, after rotation on copy");
+
     // copy from temp board to real g board
     for(int i=0; i < g->rows; i++)
     {
-        for(int j=0; j < g->rows; j++)
+        for(int j=0; j < g->cols; j++)
         {
             // delete all old blocks, only rotated blocks (marked with .is_new) will be copied.
             bool condition = temp_board[i][j].falling_piece && !temp_board[i][j].is_new;
@@ -409,6 +419,8 @@ void rotate_piece(direction dir, Game* g)
             g->game_board[i][j].is_new = false;
         }
     }
+
+    Logger("rotating piece, after copy back");
 }
 
 
@@ -417,7 +429,10 @@ void manage_full_lines(Game* g)
     for (int i= g->rows - 1; i >= 0; i--)
     {
         bool compare_value = true;
-        for (int j= g->cols - 17; j >= 0; j--)   // needed -17 because of wrong calculation of blocks.
+        //for (int j= g->cols - 17; j >= 0; j--)   // needed -17 because of wrong calculation of blocks.
+        //for (int j= g->cols - 17; j >= 0; j--)   // needed -17 because of wrong calculation of blocks.
+        for (int j= g->cols-17; j >= 0; j--)   // needed -17 because of wrong calculation of blocks.
+
         {
             bool condition = g->game_board[i][j].value == EMPTY_CELL || g->game_board[i][j].falling_piece;
 
