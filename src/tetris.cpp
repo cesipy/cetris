@@ -88,7 +88,7 @@ void example_fill_board(Game* g)
 
 void insert_falling_piece(type type, Game* g)
 {
-    int mid = 6;
+    int mid = 4;
     short color = generate_random_number(0, 7);
     Position pos;
 
@@ -358,9 +358,7 @@ void rotate_piece(direction dir, Game* g)
         }
     }
 
-    Logger("rotating piece, after copy");
 
-    
     // perform rotation on copy
     for(int i=0; i < g->rows; i++)
     {
@@ -368,8 +366,6 @@ void rotate_piece(direction dir, Game* g)
         {
             bool condition = g->game_board[i][j].value == CELL
                              && g->game_board[i][j].falling_piece;
-
-            //Logger("rotating piece, after condition");
 
             
             if (condition)
@@ -383,8 +379,7 @@ void rotate_piece(direction dir, Game* g)
 
                 if (!is_valid)
                 {
-                    Logger("rotating piece, returning, !is_valid");
-                   
+
                     return;     // exit if it is not valid; temp board will be deleted.
                 }
 
@@ -397,7 +392,6 @@ void rotate_piece(direction dir, Game* g)
         }
     }
 
-    Logger("rotating piece, after rotation on copy");
 
     // copy from temp board to real g board
     for(int i=0; i < g->rows; i++)
@@ -419,8 +413,6 @@ void rotate_piece(direction dir, Game* g)
             g->game_board[i][j].is_new = false;
         }
     }
-
-    Logger("rotating piece, after copy back");
 }
 
 

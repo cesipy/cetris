@@ -82,9 +82,7 @@ int check_input(Game* g)
             break;
         case KEY_UP:
             // rotate
-            rotate_piece(DIRECTION, g);
-            Logger("successfully rotated piece");
-            
+            rotate_piece(DIRECTION, g);           
             break;
         case KEY_DOWN:
             skip_tick_gravity(g);
